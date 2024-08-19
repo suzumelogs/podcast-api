@@ -2,32 +2,25 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { Exclude } from 'class-transformer';
 
-export type EpisodeDocument = Episode & Document;
+export type NumberDisplayDocument = NumberDisplay & Document;
 
 @Schema({ timestamps: true })
-export class Episode {
+export class NumberDisplay {
   @Exclude()
   _id: mongoose.Types.ObjectId;
 
   id: string;
 
   @Prop({ required: true })
-  title: string;
+  chapterCount: number;
 
   @Prop({ required: true })
-  content: string;
+  episodeCount: number;
 
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Chapter',
-    required: true,
-  })
-  chapterId: mongoose.Types.ObjectId;
-
-  constructor(partial: Partial<Episode>) {
+  constructor(partial: Partial<NumberDisplay>) {
     partial.id = partial._id.toString();
     Object.assign(this, partial);
   }
 }
 
-export const EpisodeSchema = SchemaFactory.createForClass(Episode);
+export const NumberDisplaySchema = SchemaFactory.createForClass(NumberDisplay);

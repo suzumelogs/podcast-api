@@ -5,6 +5,7 @@ import * as Joi from 'joi';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { CategoriesModule } from './categories/categories.module';
+import { ChaptersModule } from './chapters/chapters.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CategoriesModule } from './categories/categories.module';
     UsersModule,
     AuthModule,
     CategoriesModule,
+    ChaptersModule,
   ],
 })
 export class AppModule {}
