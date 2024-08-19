@@ -9,7 +9,7 @@ export enum Role {
   USER = 'user',
 }
 
-@Schema()
+@Schema({ timestamps: true })
 export class User {
   @Exclude()
   _id: mongoose.Types.ObjectId;

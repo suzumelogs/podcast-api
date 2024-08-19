@@ -4,7 +4,7 @@ import { Exclude } from 'class-transformer';
 
 export type ChapterDocument = Chapter & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Chapter {
   @Exclude()
   _id: mongoose.Types.ObjectId;

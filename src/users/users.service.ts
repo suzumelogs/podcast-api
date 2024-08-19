@@ -37,10 +37,6 @@ export class UsersService {
     try {
       const user = await this.userModel.findOne({ email }).lean().exec();
 
-      if (!user) {
-        throw new NotFoundException(`User with email ${email} not found`);
-      }
-
       return user;
     } catch (error) {
       throw error;

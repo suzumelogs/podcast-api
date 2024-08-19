@@ -4,7 +4,7 @@ import { Exclude } from 'class-transformer';
 
 export type EpisodeDocument = Episode & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Episode {
   @Exclude()
   _id: mongoose.Types.ObjectId;

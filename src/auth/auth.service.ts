@@ -22,6 +22,7 @@ export class AuthService {
   ) {}
   async signUp(createUserDto: CreateUserDto): Promise<LoginResponse> {
     const userExists = await this.usersService.findByEmail(createUserDto.email);
+
     if (userExists) {
       throw new BadRequestException('User already exists');
     }
@@ -37,7 +38,7 @@ export class AuthService {
       ...tokens,
       name: newUser.name,
       email: newUser.email,
-      id: newUser._id.toString(),
+      _id: newUser._id.toString(),
     };
   }
 
@@ -53,7 +54,7 @@ export class AuthService {
       ...tokens,
       name: user.name,
       email: user.email,
-      id: user._id.toString(),
+      _id: user._id.toString(),
     };
   }
 
@@ -120,7 +121,7 @@ export class AuthService {
       ...tokens,
       name: user.name,
       email: user.email,
-      id: user._id.toString(),
+      _id: user._id.toString(),
     };
   }
 
@@ -132,7 +133,7 @@ export class AuthService {
     }
 
     return {
-      id: user._id.toString(),
+      _id: user._id.toString(),
       name: user.name,
       email: user.email,
       roles: user.roles,
