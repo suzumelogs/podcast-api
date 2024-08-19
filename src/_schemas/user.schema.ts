@@ -15,6 +15,7 @@ export class User {
   _id: mongoose.Types.ObjectId;
 
   id: string;
+
   @Prop({ required: true })
   name: string;
 
@@ -27,6 +28,9 @@ export class User {
 
   @Prop({ type: [String], enum: Role, default: [Role.USER] })
   roles: Role[];
+
+  @Prop({ required: true, default: false })
+  premium: boolean;
 
   @Exclude()
   @Prop()
