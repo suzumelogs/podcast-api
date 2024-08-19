@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { ChaptersService } from './chapters.service';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
@@ -22,8 +23,11 @@ export class ChaptersController {
   constructor(private readonly chaptersService: ChaptersService) {}
 
   @Get()
-  async findAll(@Query() query: CollectionDto): Promise<{ data: Chapter[] }> {
-    return this.chaptersService.findAll(query);
+  async findAll(
+    @Query() query: CollectionDto,
+    @Req() req: any,
+  ): Promise<{ data: Chapter[] }> {
+    return this.chaptersService.findAll(query, req.user);
   }
 
   @Get(':id')

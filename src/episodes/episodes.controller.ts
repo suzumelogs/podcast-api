@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { EpisodesService } from './episodes.service';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
@@ -22,8 +23,11 @@ export class EpisodesController {
   constructor(private readonly episodesService: EpisodesService) {}
 
   @Get()
-  async findAll(@Query() query: CollectionDto): Promise<{ data: Episode[] }> {
-    return this.episodesService.findAll(query);
+  async findAll(
+    @Query() query: CollectionDto,
+    @Req() req: any,
+  ): Promise<{ data: Episode[] }> {
+    return this.episodesService.findAll(query, req.user);
   }
 
   @Get(':id')

@@ -7,22 +7,35 @@ import { CollectionResponse } from 'src/_dtos/output.dto';
 import { DocumentCollector } from 'src/common/executor/collector';
 import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
 import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class EpisodesService {
   constructor(
     @InjectModel(Episode.name)
     private readonly episodeModel: Model<EpisodeDocument>,
+    private readonly usersService: UsersService,
   ) {}
 
   async findAll(
     collectionDto: CollectionDto,
+    user: any,
   ): Promise<CollectionResponse<EpisodeDocument>> {
     try {
+      const userId = user?.sub;
+      const userLogin = await this.usersService.findById(userId);
       const collector = new DocumentCollector<EpisodeDocument>(
         this.episodeModel,
       );
-      return collector.find(collectionDto);
+
+      if (userLogin?.premium) {
+        return collector.find(collectionDto);
+      }
+
+      return collector.find({
+        filter: { display: { $eq: 'true' } },
+        ...collectionDto,
+      });
     } catch (error) {
       throw error;
     }

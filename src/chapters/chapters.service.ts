@@ -7,22 +7,35 @@ import { CollectionResponse } from '../_dtos/output.dto';
 import { DocumentCollector } from '../common/executor/collector';
 import { CreateChapterDto } from 'src/_dtos/create_chapter.dto';
 import { UpdateChapterDto } from 'src/_dtos/update_chapter.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class ChaptersService {
   constructor(
     @InjectModel(Chapter.name)
     private readonly chapterModel: Model<ChapterDocument>,
+    private readonly usersService: UsersService,
   ) {}
 
   async findAll(
     collectionDto: CollectionDto,
+    user: any,
   ): Promise<CollectionResponse<ChapterDocument>> {
     try {
+      const userId = user?.sub;
+      const userLogin = await this.usersService.findById(userId);
       const collector = new DocumentCollector<ChapterDocument>(
         this.chapterModel,
       );
-      return collector.find(collectionDto);
+
+      if (userLogin?.premium) {
+        return collector.find(collectionDto);
+      }
+
+      return collector.find({
+        filter: { display: { $eq: 'true' } },
+        ...collectionDto,
+      });
     } catch (error) {
       throw error;
     }
