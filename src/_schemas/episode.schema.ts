@@ -17,6 +17,9 @@ export class Episode {
   @Prop({ required: true })
   content: string;
 
+  @Prop({ required: true, default: false })
+  display: boolean;
+
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Chapter',

@@ -17,6 +17,9 @@ export class Chapter {
   @Prop({ required: true })
   description: string;
 
+  @Prop({ required: true, default: false })
+  display: boolean;
+
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
