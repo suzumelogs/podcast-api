@@ -7,12 +7,14 @@ import { Category, CategoryDocument } from '../_schemas/category.schema';
 import { DocumentCollector } from '../common/executor/collector';
 import { CollectionDto } from '../_dtos/input.dto';
 import { CollectionResponse } from '../_dtos/output.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectModel(Category.name)
     private readonly categoryModel: Model<CategoryDocument>,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async findAll(
@@ -44,9 +46,15 @@ export class CategoriesService {
 
   async create(
     createCategoryDto: CreateCategoryDto,
+    file: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Category }> {
     try {
-      const data = await this.categoryModel.create(createCategoryDto);
+      const imageUrl = file
+        ? (await this.cloudinaryService.uploadImageCategory(file)).secure_url
+        : createCategoryDto.image_url;
+
+      const categoryData = { ...createCategoryDto, image_url: imageUrl };
+      const data = await this.categoryModel.create(categoryData);
 
       return {
         statusCode: HttpStatus.CREATED,

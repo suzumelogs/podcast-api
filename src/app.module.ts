@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ChaptersModule } from './chapters/chapters.module';
 import { EpisodesModule } from './episodes/episodes.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { EpisodesModule } from './episodes/episodes.module';
     CategoriesModule,
     ChaptersModule,
     EpisodesModule,
+    CloudinaryModule,
   ],
 })
 export class AppModule {}
