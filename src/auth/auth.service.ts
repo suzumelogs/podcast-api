@@ -10,7 +10,7 @@ import * as argon2 from 'argon2';
 import { UsersService } from '../users/users.service';
 import { AuthDto } from '../_dtos/auth.dto';
 import { CreateUserDto } from '../_dtos/create_user.dto';
-import { LoginResponse } from '../_types/res.login.interface';
+import { SigninResponse, SignupResponse } from '../_types/res.login.interface';
 import { Tokens } from '../_types/tokens.type';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
-  async signUp(createUserDto: CreateUserDto): Promise<LoginResponse> {
+  async signUp(createUserDto: CreateUserDto): Promise<SignupResponse> {
     const userExists = await this.usersService.findByEmail(createUserDto.email);
 
     if (userExists) {
@@ -42,7 +42,7 @@ export class AuthService {
     };
   }
 
-  async signIn(data: AuthDto): Promise<LoginResponse> {
+  async signIn(data: AuthDto): Promise<SigninResponse> {
     const user = await this.usersService.findByEmail(data.email);
     if (!user) throw new BadRequestException('User does not exist');
     const passwordMatches = argon2.verify(user.password, data.password);
@@ -51,10 +51,14 @@ export class AuthService {
     const tokens = await this.getTokens(String(user._id), user.email);
     await this.updateRefreshToken(String(user._id), tokens.refreshToken);
     return {
-      ...tokens,
-      name: user.name,
-      email: user.email,
-      _id: user._id.toString(),
+      data: {
+        ...tokens,
+        user: {
+          _id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+        },
+      },
     };
   }
 
@@ -106,7 +110,7 @@ export class AuthService {
   async refreshTokens(
     userId: string,
     refreshToken: string,
-  ): Promise<LoginResponse> {
+  ): Promise<SignupResponse> {
     const user = await this.usersService.findById(userId);
     if (!user || !user.refreshToken)
       throw new ForbiddenException('Access Denied');
@@ -133,10 +137,12 @@ export class AuthService {
     }
 
     return {
-      _id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      roles: user.roles,
+      data: {
+        _id: user._id.toString(),
+        name: user.name,
+        email: user.email,
+        roles: user.roles,
+      },
     };
   }
 }
