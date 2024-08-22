@@ -18,7 +18,7 @@ export class Category {
   description: string;
 
   @Prop({ required: true })
-  image_url: string;
+  imageUrl: string;
 
   constructor(partial: Partial<Category>) {
     partial.id = partial._id.toString();

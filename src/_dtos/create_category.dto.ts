@@ -7,5 +7,5 @@ export class CreateCategoryDto {
   @IsString()
   description: string;
 
-  image_url: string;
+  imageUrl: string;
 }
