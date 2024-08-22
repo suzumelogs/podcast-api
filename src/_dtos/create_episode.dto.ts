@@ -9,6 +9,8 @@ export class CreateEpisodeDto {
   @IsNotEmpty()
   content: string;
 
+  imageUrl: string;
+
   @IsMongoId()
   chapterId: string;
 }

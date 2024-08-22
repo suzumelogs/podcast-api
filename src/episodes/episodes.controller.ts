@@ -9,6 +9,8 @@ import {
   Query,
   UseGuards,
   Req,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { EpisodesService } from './episodes.service';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
@@ -16,6 +18,7 @@ import { CollectionDto } from 'src/_dtos/input.dto';
 import { Episode } from 'src/_schemas/episode.schema';
 import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
 import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(AccessTokenGuard)
 @Controller('episodes')
@@ -36,13 +39,22 @@ export class EpisodesController {
   }
 
   @Post()
-  create(@Body() createEpisodeDto: CreateEpisodeDto) {
-    return this.episodesService.create(createEpisodeDto);
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @Body() createEpisodeDto: CreateEpisodeDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.episodesService.create(createEpisodeDto, file);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEpisodeDto: UpdateEpisodeDto) {
-    return this.episodesService.update(id, updateEpisodeDto);
+  @UseInterceptors(FileInterceptor('file'))
+  update(
+    @Param('id') id: string,
+    @Body() updateEpisodeDto: UpdateEpisodeDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.episodesService.update(id, updateEpisodeDto, file);
   }
 
   @Delete(':id')

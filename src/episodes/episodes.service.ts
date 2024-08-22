@@ -8,6 +8,7 @@ import { DocumentCollector } from 'src/common/executor/collector';
 import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
 import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
 import { UsersService } from 'src/users/users.service';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class EpisodesService {
@@ -15,6 +16,7 @@ export class EpisodesService {
     @InjectModel(Episode.name)
     private readonly episodeModel: Model<EpisodeDocument>,
     private readonly usersService: UsersService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async findAll(
@@ -57,9 +59,18 @@ export class EpisodesService {
 
   async create(
     createEpisodeDto: CreateEpisodeDto,
+    file?: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Episode }> {
     try {
-      const data = await this.episodeModel.create(createEpisodeDto);
+      let imageUrl = createEpisodeDto.imageUrl;
+      if (file) {
+        const uploadResponse =
+          await this.cloudinaryService.uploadImageEpisodes(file);
+        imageUrl = uploadResponse.secure_url;
+      }
+
+      const episodeData = { ...createEpisodeDto, imageUrl };
+      const data = await this.episodeModel.create(episodeData);
 
       return {
         statusCode: HttpStatus.CREATED,
@@ -74,10 +85,35 @@ export class EpisodesService {
   async update(
     id: string,
     updateEpisodeDto: UpdateEpisodeDto,
+    file?: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Episode }> {
     try {
+      const currentEpisode = await this.episodeModel.findById(id).exec();
+      if (!currentEpisode) {
+        throw new NotFoundException(`Episode with id ${id} not found`);
+      }
+
+      let imageUrl = updateEpisodeDto.imageUrl;
+      if (file) {
+        const uploadResponse =
+          await this.cloudinaryService.uploadImageEpisodes(file);
+        imageUrl = uploadResponse.secure_url;
+
+        if (currentEpisode.imageUrl) {
+          const publicId = this.cloudinaryService.extractPublicId(
+            currentEpisode.imageUrl,
+          );
+          await this.cloudinaryService.bulkDelete(
+            [publicId],
+            'podcast/episode',
+          );
+        }
+      }
+
+      const updatedData = { ...updateEpisodeDto, imageUrl };
+
       const data = await this.episodeModel
-        .findByIdAndUpdate(id, updateEpisodeDto, {
+        .findByIdAndUpdate(id, updatedData, {
           new: true,
           runValidators: true,
         })
@@ -89,7 +125,7 @@ export class EpisodesService {
       }
 
       return {
-        statusCode: HttpStatus.CREATED,
+        statusCode: HttpStatus.OK,
         message: 'Updated successfully',
         data,
       };
@@ -100,11 +136,20 @@ export class EpisodesService {
 
   async remove(id: string): Promise<{ statusCode: number; message: string }> {
     try {
-      const data = await this.episodeModel.findByIdAndDelete(id).lean().exec();
+      const episode = await this.episodeModel.findById(id).exec();
 
-      if (!data) {
+      if (!episode) {
         throw new NotFoundException(`Episode with id ${id} not found`);
       }
+
+      if (episode.imageUrl) {
+        const publicId = this.cloudinaryService.extractPublicId(
+          episode.imageUrl,
+        );
+        await this.cloudinaryService.bulkDelete([publicId], 'podcast/episode');
+      }
+
+      await this.episodeModel.findByIdAndDelete(id).exec();
 
       return {
         statusCode: HttpStatus.OK,
