@@ -6,6 +6,7 @@ import { Chapter, ChapterSchema } from '../_schemas/chapter.schema';
 import { UsersService } from '../users/users.service';
 import { UsersModule } from '../users/users.module';
 import { User, UserSchema } from '../_schemas/user.schema';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { User, UserSchema } from '../_schemas/user.schema';
     UsersModule,
   ],
   controllers: [ChaptersController],
-  providers: [ChaptersService, UsersService],
+  providers: [ChaptersService, UsersService, CloudinaryService],
   exports: [ChaptersService],
 })
 export class ChaptersModule {}

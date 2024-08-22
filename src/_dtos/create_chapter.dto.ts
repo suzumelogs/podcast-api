@@ -9,6 +9,8 @@ export class CreateChapterDto {
   @IsNotEmpty()
   description: string;
 
+  imageUrl: string;
+
   @IsMongoId()
   categoryId: string;
 }

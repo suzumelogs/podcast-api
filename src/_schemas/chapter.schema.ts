@@ -20,6 +20,9 @@ export class Chapter {
   @Prop({ required: true, default: false })
   display: boolean;
 
+  @Prop({ required: true })
+  imageUrl: string;
+
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',

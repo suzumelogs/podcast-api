@@ -8,6 +8,7 @@ import { DocumentCollector } from '../common/executor/collector';
 import { CreateChapterDto } from 'src/_dtos/create_chapter.dto';
 import { UpdateChapterDto } from 'src/_dtos/update_chapter.dto';
 import { UsersService } from 'src/users/users.service';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class ChaptersService {
@@ -15,6 +16,7 @@ export class ChaptersService {
     @InjectModel(Chapter.name)
     private readonly chapterModel: Model<ChapterDocument>,
     private readonly usersService: UsersService,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async findAll(
@@ -57,9 +59,16 @@ export class ChaptersService {
 
   async create(
     createChapterDto: CreateChapterDto,
+    file: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Chapter }> {
     try {
-      const data = await this.chapterModel.create(createChapterDto);
+      const imageUrl = file
+        ? (await this.cloudinaryService.uploadImageChapter(file)).secure_url
+        : createChapterDto.imageUrl;
+
+      const chapterData = { ...createChapterDto, imageUrl };
+
+      const data = await this.chapterModel.create(chapterData);
 
       return {
         statusCode: HttpStatus.CREATED,
@@ -74,10 +83,35 @@ export class ChaptersService {
   async update(
     id: string,
     updateChapterDto: UpdateChapterDto,
+    file?: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Chapter }> {
     try {
+      const currentChapter = await this.chapterModel.findById(id).exec();
+      if (!currentChapter) {
+        throw new NotFoundException(`Chapter with id ${id} not found`);
+      }
+
+      let imageUrl = updateChapterDto.imageUrl;
+      if (file) {
+        const uploadResponse =
+          await this.cloudinaryService.uploadImageChapter(file);
+        imageUrl = uploadResponse.secure_url;
+
+        if (currentChapter.imageUrl) {
+          const publicId = this.cloudinaryService.extractPublicId(
+            currentChapter.imageUrl,
+          );
+          await this.cloudinaryService.bulkDelete(
+            [publicId],
+            'podcast/chapter',
+          );
+        }
+      }
+
+      const updatedData = { ...updateChapterDto, imageUrl };
+
       const data = await this.chapterModel
-        .findByIdAndUpdate(id, updateChapterDto, {
+        .findByIdAndUpdate(id, updatedData, {
           new: true,
           runValidators: true,
         })
@@ -89,7 +123,7 @@ export class ChaptersService {
       }
 
       return {
-        statusCode: HttpStatus.CREATED,
+        statusCode: HttpStatus.OK,
         message: 'Updated successfully',
         data,
       };
@@ -100,11 +134,20 @@ export class ChaptersService {
 
   async remove(id: string): Promise<{ statusCode: number; message: string }> {
     try {
-      const data = await this.chapterModel.findByIdAndDelete(id).lean().exec();
+      const chapter = await this.chapterModel.findById(id).exec();
 
-      if (!data) {
+      if (!chapter) {
         throw new NotFoundException(`Chapter with id ${id} not found`);
       }
+
+      if (chapter.imageUrl) {
+        const publicId = this.cloudinaryService.extractPublicId(
+          chapter.imageUrl,
+        );
+        await this.cloudinaryService.bulkDelete([publicId], 'podcast/chapter');
+      }
+
+      await this.chapterModel.findByIdAndDelete(id).exec();
 
       return {
         statusCode: HttpStatus.OK,

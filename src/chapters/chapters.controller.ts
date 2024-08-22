@@ -9,6 +9,8 @@ import {
   Query,
   UseGuards,
   Req,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ChaptersService } from './chapters.service';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
@@ -16,6 +18,7 @@ import { CollectionDto } from 'src/_dtos/input.dto';
 import { Chapter } from 'src/_schemas/chapter.schema';
 import { CreateChapterDto } from 'src/_dtos/create_chapter.dto';
 import { UpdateChapterDto } from 'src/_dtos/update_chapter.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(AccessTokenGuard)
 @Controller('chapters')
@@ -36,13 +39,22 @@ export class ChaptersController {
   }
 
   @Post()
-  create(@Body() createChapterDto: CreateChapterDto) {
-    return this.chaptersService.create(createChapterDto);
+  @UseInterceptors(FileInterceptor('file'))
+  create(
+    @Body() createChapterDto: CreateChapterDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.chaptersService.create(createChapterDto, file);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateChapterDto: UpdateChapterDto) {
-    return this.chaptersService.update(id, updateChapterDto);
+  @UseInterceptors(FileInterceptor('file'))
+  update(
+    @Param('id') id: string,
+    @Body() updateChapterDto: UpdateChapterDto,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    return this.chaptersService.update(id, updateChapterDto, file);
   }
 
   @Delete(':id')

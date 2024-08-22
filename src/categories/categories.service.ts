@@ -69,7 +69,7 @@ export class CategoriesService {
   async update(
     id: string,
     updateCategoryDto: UpdateCategoryDto,
-    file: Express.Multer.File,
+    file?: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Category }> {
     try {
       const currentCategory = await this.categoryModel.findById(id).exec();
