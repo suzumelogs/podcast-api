@@ -24,7 +24,7 @@ export class DocumentCollector<T> {
   async find(query: CollectionDto): Promise<CollectionResponse<T>> {
     const q = this.model
       .find(query.filter)
-      .skip(query.page * query.limit)
+      .skip((query.page - 1) * query.limit)
       .limit(query.limit);
 
     if (query.sorter) {

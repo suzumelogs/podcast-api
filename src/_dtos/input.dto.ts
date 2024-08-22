@@ -25,7 +25,7 @@ export class CollectionDto {
 
   @Type(() => Number)
   @Min(0)
-  readonly page?: number = 0;
+  readonly page?: number = 1;
 
   @Type(() => Number)
   @Min(0)
