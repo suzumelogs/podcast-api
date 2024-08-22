@@ -7,12 +7,14 @@ import { Category, CategoryDocument } from '../_schemas/category.schema';
 import { DocumentCollector } from '../common/executor/collector';
 import { CollectionDto } from '../_dtos/input.dto';
 import { CollectionResponse } from '../_dtos/output.dto';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectModel(Category.name)
     private readonly categoryModel: Model<CategoryDocument>,
+    private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async findAll(
@@ -44,9 +46,15 @@ export class CategoriesService {
 
   async create(
     createCategoryDto: CreateCategoryDto,
+    file: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Category }> {
     try {
-      const data = await this.categoryModel.create(createCategoryDto);
+      const imageUrl = file
+        ? (await this.cloudinaryService.uploadImageCategory(file)).secure_url
+        : createCategoryDto.imageUrl;
+
+      const categoryData = { ...createCategoryDto, imageUrl };
+      const data = await this.categoryModel.create(categoryData);
 
       return {
         statusCode: HttpStatus.CREATED,
@@ -61,10 +69,36 @@ export class CategoriesService {
   async update(
     id: string,
     updateCategoryDto: UpdateCategoryDto,
+    file: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Category }> {
     try {
+      const currentCategory = await this.categoryModel.findById(id).exec();
+      if (!currentCategory) {
+        throw new NotFoundException(`Category with id ${id} not found`);
+      }
+
+      let imageUrl = updateCategoryDto.imageUrl;
+      if (file) {
+        const uploadResponse =
+          await this.cloudinaryService.uploadImageCategory(file);
+        imageUrl = uploadResponse.secure_url;
+
+        if (currentCategory.imageUrl) {
+          const publicId = this.cloudinaryService.extractPublicId(
+            currentCategory.imageUrl,
+          );
+
+          await this.cloudinaryService.bulkDelete(
+            [publicId],
+            'podcast/category',
+          );
+        }
+      }
+
+      const updatedData = { ...updateCategoryDto, imageUrl };
+
       const data = await this.categoryModel
-        .findByIdAndUpdate(id, updateCategoryDto, {
+        .findByIdAndUpdate(id, updatedData, {
           new: true,
           runValidators: true,
         })
@@ -76,7 +110,7 @@ export class CategoriesService {
       }
 
       return {
-        statusCode: HttpStatus.CREATED,
+        statusCode: HttpStatus.OK,
         message: 'Updated successfully',
         data,
       };
@@ -87,11 +121,20 @@ export class CategoriesService {
 
   async remove(id: string): Promise<{ statusCode: number; message: string }> {
     try {
-      const data = await this.categoryModel.findByIdAndDelete(id).lean().exec();
+      const category = await this.categoryModel.findById(id).exec();
 
-      if (!data) {
+      if (!category) {
         throw new NotFoundException(`Category with id ${id} not found`);
       }
+
+      if (category.imageUrl) {
+        const publicId = this.cloudinaryService.extractPublicId(
+          category.imageUrl,
+        );
+        await this.cloudinaryService.bulkDelete([publicId], 'podcast/category');
+      }
+
+      await this.categoryModel.findByIdAndDelete(id).exec();
 
       return {
         statusCode: HttpStatus.OK,
