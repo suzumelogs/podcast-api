@@ -38,13 +38,18 @@ export class ChaptersController {
     return this.chaptersService.findById(id);
   }
 
+  // @Post()
+  // @UseInterceptors(FileInterceptor('file'))
+  // create(
+  //   @Body() createChapterDto: CreateChapterDto,
+  //   @UploadedFile() file?: Express.Multer.File,
+  // ) {
+  //   return this.chaptersService.create(createChapterDto, file);
+  // }
+
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  create(
-    @Body() createChapterDto: CreateChapterDto,
-    @UploadedFile() file?: Express.Multer.File,
-  ) {
-    return this.chaptersService.create(createChapterDto, file);
+  create(@Body() createChapterDto: CreateChapterDto) {
+    return this.chaptersService.create(createChapterDto);
   }
 
   @Patch(':id')

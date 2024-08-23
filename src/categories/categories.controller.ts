@@ -34,13 +34,18 @@ export class CategoriesController {
     return this.categoriesService.findById(id);
   }
 
+  // @Post()
+  // @UseInterceptors(FileInterceptor('file'))
+  // async create(
+  //   @Body() createCategoryDto: CreateCategoryDto,
+  //   @UploadedFile() file?: Express.Multer.File,
+  // ) {
+  //   return this.categoriesService.create(createCategoryDto, file);
+  // }
+
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  async create(
-    @Body() createCategoryDto: CreateCategoryDto,
-    @UploadedFile() file?: Express.Multer.File,
-  ) {
-    return this.categoriesService.create(createCategoryDto, file);
+  create(@Body() createCategoryDto: CreateCategoryDto) {
+    return this.categoriesService.create(createCategoryDto);
   }
 
   @Patch(':id')

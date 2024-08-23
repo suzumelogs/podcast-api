@@ -44,17 +44,33 @@ export class CategoriesService {
     }
   }
 
+  // async create(
+  //   createCategoryDto: CreateCategoryDto,
+  //   file: Express.Multer.File,
+  // ): Promise<{ statusCode: number; message: string; data: Category }> {
+  //   try {
+  //     const imageUrl = file
+  //       ? (await this.cloudinaryService.uploadImageCategory(file)).secure_url
+  //       : createCategoryDto.imageUrl;
+
+  //     const categoryData = { ...createCategoryDto, imageUrl };
+  //     const data = await this.categoryModel.create(categoryData);
+
+  //     return {
+  //       statusCode: HttpStatus.CREATED,
+  //       message: 'Created successfully',
+  //       data,
+  //     };
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
   async create(
     createCategoryDto: CreateCategoryDto,
-    file: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Category }> {
     try {
-      const imageUrl = file
-        ? (await this.cloudinaryService.uploadImageCategory(file)).secure_url
-        : createCategoryDto.imageUrl;
-
-      const categoryData = { ...createCategoryDto, imageUrl };
-      const data = await this.categoryModel.create(categoryData);
+      const data = await this.categoryModel.create(createCategoryDto);
 
       return {
         statusCode: HttpStatus.CREATED,

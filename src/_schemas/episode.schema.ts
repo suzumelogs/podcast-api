@@ -20,8 +20,8 @@ export class Episode {
   @Prop({ required: true, default: false })
   display: boolean;
 
-  @Prop({ required: true })
-  imageUrl: string;
+  @Prop({ required: false, default: null })
+  imageUrl: string | null;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,

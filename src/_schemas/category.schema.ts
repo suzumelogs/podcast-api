@@ -17,8 +17,8 @@ export class Category {
   @Prop({ required: true })
   description: string;
 
-  @Prop({ required: true })
-  imageUrl: string;
+  @Prop({ required: false, default: null })
+  imageUrl: string | null;
 
   constructor(partial: Partial<Category>) {
     partial.id = partial._id.toString();
