@@ -57,18 +57,34 @@ export class ChaptersService {
     }
   }
 
+  // async create(
+  //   createChapterDto: CreateChapterDto,
+  //   file: Express.Multer.File,
+  // ): Promise<{ statusCode: number; message: string; data: Chapter }> {
+  //   try {
+  //     const imageUrl = file
+  //       ? (await this.cloudinaryService.uploadImageChapter(file)).secure_url
+  //       : createChapterDto.imageUrl;
+
+  //     const chapterData = { ...createChapterDto, imageUrl };
+
+  //     const data = await this.chapterModel.create(chapterData);
+
+  //     return {
+  //       statusCode: HttpStatus.CREATED,
+  //       message: 'Created successfully',
+  //       data,
+  //     };
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
   async create(
     createChapterDto: CreateChapterDto,
-    file: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Chapter }> {
     try {
-      const imageUrl = file
-        ? (await this.cloudinaryService.uploadImageChapter(file)).secure_url
-        : createChapterDto.imageUrl;
-
-      const chapterData = { ...createChapterDto, imageUrl };
-
-      const data = await this.chapterModel.create(chapterData);
+      const data = await this.chapterModel.create(createChapterDto);
 
       return {
         statusCode: HttpStatus.CREATED,

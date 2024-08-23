@@ -3,13 +3,13 @@ import { IsString, IsNotEmpty, IsMongoId } from 'class-validator';
 export class CreateChapterDto {
   @IsString()
   @IsNotEmpty()
-  title: string;
+  name: string;
 
   @IsString()
   @IsNotEmpty()
   description: string;
 
-  imageUrl: string;
+  imageUrl?: string;
 
   @IsMongoId()
   categoryId: string;
