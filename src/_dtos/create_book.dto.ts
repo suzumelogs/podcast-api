@@ -1,12 +1,12 @@
-import { IsEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateBookDto {
   @IsString()
-  @IsEmpty()
+  @IsNotEmpty({ message: 'Name must not be empty' })
   name: string;
 
   @IsString()
-  @IsEmpty()
+  @IsNotEmpty({ message: 'Description must not be empty' })
   description: string;
 
   url?: string;
