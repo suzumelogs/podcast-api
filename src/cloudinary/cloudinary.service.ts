@@ -34,8 +34,8 @@ export class CloudinaryService {
     return this.uploadFileToFolder(file, folder, resourceType);
   }
 
-  uploadImageCategory(file: Express.Multer.File): Promise<CloudinaryResponse> {
-    return this.uploadFile(file, 'podcast/category');
+  uploadImageBook(file: Express.Multer.File): Promise<CloudinaryResponse> {
+    return this.uploadFile(file, 'podcast/book');
   }
 
   uploadImageChapter(file: Express.Multer.File): Promise<CloudinaryResponse> {

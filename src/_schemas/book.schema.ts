@@ -2,10 +2,10 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { Exclude } from 'class-transformer';
 
-export type CategoryDocument = Category & Document;
+export type BookDocument = Book & Document;
 
 @Schema({ timestamps: true })
-export class Category {
+export class Book {
   @Exclude()
   _id: mongoose.Types.ObjectId;
 
@@ -17,13 +17,14 @@ export class Category {
   @Prop({ required: true })
   description: string;
 
+  // Image
   @Prop({ required: true })
-  imageUrl: string;
+  url: string;
 
-  constructor(partial: Partial<Category>) {
+  constructor(partial: Partial<Book>) {
     partial.id = partial._id.toString();
     Object.assign(this, partial);
   }
 }
 
-export const CategorySchema = SchemaFactory.createForClass(Category);
+export const BookSchema = SchemaFactory.createForClass(Book);

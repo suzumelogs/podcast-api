@@ -12,5 +12,5 @@ export class CreateChapterDto {
   imageUrl: string;
 
   @IsMongoId()
-  categoryId: string;
+  bookId: string;
 }

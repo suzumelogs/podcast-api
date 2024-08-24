@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import * as Joi from 'joi';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import { CategoriesModule } from './categories/categories.module';
+import { BooksModule } from './books/books.module';
 import { ChaptersModule } from './chapters/chapters.module';
 import { EpisodesModule } from './episodes/episodes.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
@@ -27,7 +27,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     MongooseModule.forRoot(process.env.MONGODB_URI),
     UsersModule,
     AuthModule,
-    CategoriesModule,
+    BooksModule,
     ChaptersModule,
     EpisodesModule,
     CloudinaryModule,

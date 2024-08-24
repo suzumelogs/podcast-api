@@ -25,10 +25,10 @@ export class Chapter {
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
+    ref: 'Book',
     required: true,
   })
-  categoryId: mongoose.Types.ObjectId;
+  bookId: mongoose.Types.ObjectId;
 
   constructor(partial: Partial<Chapter>) {
     partial.id = partial._id.toString();
