@@ -18,7 +18,7 @@ export class Book {
   description: string;
 
   // Image
-  @Prop({ required: true })
+  @Prop({ required: false })
   url: string;
 
   constructor(partial: Partial<Book>) {

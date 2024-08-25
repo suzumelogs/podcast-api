@@ -40,12 +40,15 @@ export class DocumentCollector<T> {
     };
   }
 
-  private async paginate(query: CollectionDto) {
+  private async paginate(query: CollectionDto): Promise<Pagination> {
     const count: number = await this.count(query);
+    const totalPages = Math.ceil(count / query.limit);
+
     const pagination: Pagination = {
       total: count,
       page: query.page,
       limit: query.limit,
+      totalPages: totalPages,
       next:
         (query.page + 1) * query.limit >= count ? undefined : query.page + 1,
       prev: query.page == 0 ? undefined : query.page - 1,
