@@ -2,15 +2,16 @@ import { IsString, IsNotEmpty, IsMongoId } from 'class-validator';
 
 export class CreateChapterDto {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Name must not be empty' })
   title: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Description must not be empty' })
   description: string;
 
-  imageUrl: string;
+  url?: string;
 
   @IsMongoId()
+  @IsNotEmpty({ message: 'BookId must not be empty' })
   bookId: string;
 }

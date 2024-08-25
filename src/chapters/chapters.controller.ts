@@ -7,18 +7,17 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
-  Req,
-  UseInterceptors,
   UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ChaptersService } from './chapters.service';
-import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
-import { CollectionDto } from 'src/_dtos/input.dto';
-import { Chapter } from 'src/_schemas/chapter.schema';
-import { CreateChapterDto } from 'src/_dtos/create_chapter.dto';
-import { UpdateChapterDto } from 'src/_dtos/update_chapter.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CreateChapterDto } from 'src/_dtos/create_chapter.dto';
+import { CollectionDto } from 'src/_dtos/input.dto';
+import { UpdateChapterDto } from 'src/_dtos/update_chapter.dto';
+import { Chapter } from 'src/_schemas/chapter.schema';
+import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
+import { ChaptersService } from './chapters.service';
 
 @UseGuards(AccessTokenGuard)
 @Controller('chapters')
@@ -26,11 +25,8 @@ export class ChaptersController {
   constructor(private readonly chaptersService: ChaptersService) {}
 
   @Get()
-  async findAll(
-    @Query() query: CollectionDto,
-    @Req() req: any,
-  ): Promise<{ data: Chapter[] }> {
-    return this.chaptersService.findAll(query, req.user);
+  async findAll(@Query() query: CollectionDto): Promise<{ data: Chapter[] }> {
+    return this.chaptersService.findAll(query);
   }
 
   @Get(':id')

@@ -12,16 +12,14 @@ export class Chapter {
   id: string;
 
   @Prop({ required: true })
-  title: string;
+  name: string;
 
   @Prop({ required: true })
   description: string;
 
-  @Prop({ required: true, default: false })
-  display: boolean;
-
-  @Prop({ required: true })
-  imageUrl: string;
+  // Image
+  @Prop({ required: false })
+  url: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,

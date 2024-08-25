@@ -1,43 +1,30 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Chapter, ChapterDocument } from '../_schemas/chapter.schema';
-import { CollectionDto } from '../_dtos/input.dto';
-import { CollectionResponse } from '../_dtos/output.dto';
-import { DocumentCollector } from '../common/executor/collector';
 import { CreateChapterDto } from 'src/_dtos/create_chapter.dto';
 import { UpdateChapterDto } from 'src/_dtos/update_chapter.dto';
-import { UsersService } from 'src/users/users.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { CollectionDto } from '../_dtos/input.dto';
+import { CollectionResponse } from '../_dtos/output.dto';
+import { Chapter, ChapterDocument } from '../_schemas/chapter.schema';
+import { DocumentCollector } from '../common/executor/collector';
 
 @Injectable()
 export class ChaptersService {
   constructor(
     @InjectModel(Chapter.name)
     private readonly chapterModel: Model<ChapterDocument>,
-    private readonly usersService: UsersService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async findAll(
     collectionDto: CollectionDto,
-    user: any,
   ): Promise<CollectionResponse<ChapterDocument>> {
     try {
-      const userId = user?.sub;
-      const userLogin = await this.usersService.findById(userId);
       const collector = new DocumentCollector<ChapterDocument>(
         this.chapterModel,
       );
-
-      if (userLogin?.premium) {
-        return collector.find(collectionDto);
-      }
-
-      return collector.find({
-        filter: { display: { $eq: 'true' } },
-        ...collectionDto,
-      });
+      return collector.find(collectionDto);
     } catch (error) {
       throw error;
     }
@@ -62,11 +49,11 @@ export class ChaptersService {
     file: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Chapter }> {
     try {
-      const imageUrl = file
+      const url = file
         ? (await this.cloudinaryService.uploadImageChapter(file)).secure_url
-        : createChapterDto.imageUrl;
+        : createChapterDto.url;
 
-      const chapterData = { ...createChapterDto, imageUrl };
+      const chapterData = { ...createChapterDto, url };
 
       const data = await this.chapterModel.create(chapterData);
 
@@ -91,15 +78,15 @@ export class ChaptersService {
         throw new NotFoundException(`Chapter with id ${id} not found`);
       }
 
-      let imageUrl = updateChapterDto.imageUrl;
+      let url = updateChapterDto.url;
       if (file) {
         const uploadResponse =
           await this.cloudinaryService.uploadImageChapter(file);
-        imageUrl = uploadResponse.secure_url;
+        url = uploadResponse.secure_url;
 
-        if (currentChapter.imageUrl) {
+        if (currentChapter.url) {
           const publicId = this.cloudinaryService.extractPublicId(
-            currentChapter.imageUrl,
+            currentChapter.url,
           );
           await this.cloudinaryService.bulkDelete(
             [publicId],
@@ -108,7 +95,7 @@ export class ChaptersService {
         }
       }
 
-      const updatedData = { ...updateChapterDto, imageUrl };
+      const updatedData = { ...updateChapterDto, url };
 
       const data = await this.chapterModel
         .findByIdAndUpdate(id, updatedData, {
@@ -140,10 +127,8 @@ export class ChaptersService {
         throw new NotFoundException(`Chapter with id ${id} not found`);
       }
 
-      if (chapter.imageUrl) {
-        const publicId = this.cloudinaryService.extractPublicId(
-          chapter.imageUrl,
-        );
+      if (chapter.url) {
+        const publicId = this.cloudinaryService.extractPublicId(chapter.url);
         await this.cloudinaryService.bulkDelete([publicId], 'podcast/chapter');
       }
 

@@ -137,4 +137,18 @@ export class BooksService {
       throw error;
     }
   }
+
+  async findAllValueLabel(): Promise<
+    { statusCode: number; data: { label: string; value: string } }[]
+  > {
+    try {
+      const res = await this.bookModel.find().lean();
+      return res.map((book) => ({
+        statusCode: HttpStatus.OK,
+        data: { label: book.name, value: book._id.toString() },
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
 }

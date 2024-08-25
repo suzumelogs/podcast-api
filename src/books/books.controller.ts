@@ -57,4 +57,10 @@ export class BooksController {
   remove(@Param('id') id: string) {
     return this.booksService.remove(id);
   }
+
+  @Get('value-label')
+  async findAllValueLabels() {
+    const valueLabels = await this.booksService.findAllValueLabel();
+    return valueLabels;
+  }
 }
