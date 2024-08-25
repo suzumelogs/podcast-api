@@ -31,6 +31,8 @@ export class DocumentCollector<T> {
       const sortOptions: SortableParameters =
         '_id' in query.sorter ? query.sorter : { ...query.sorter, _id: 'asc' };
       q.sort(sortOptions);
+    } else {
+      q.sort({ createdAt: 'desc' });
     }
 
     const data = (await q.exec()) as T[];
