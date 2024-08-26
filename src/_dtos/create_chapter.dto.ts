@@ -3,7 +3,7 @@ import { IsString, IsNotEmpty, IsMongoId } from 'class-validator';
 export class CreateChapterDto {
   @IsString()
   @IsNotEmpty({ message: 'Name must not be empty' })
-  title: string;
+  name: string;
 
   @IsString()
   @IsNotEmpty({ message: 'Description must not be empty' })
