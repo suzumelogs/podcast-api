@@ -1,16 +1,25 @@
-import { IsString, IsNotEmpty, IsMongoId } from 'class-validator';
+import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateEpisodeDto {
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Title must not be empty' })
   title: string;
 
   @IsString()
-  @IsNotEmpty()
-  content: string;
+  @IsNotEmpty({ message: 'Album must not be empty' })
+  album: string;
 
-  imageUrl: string;
+  @IsString()
+  @IsNotEmpty({ message: 'Artist must not be empty' })
+  artist: string;
 
-  @IsMongoId()
+  artWork?: string;
+
+  @IsString()
+  @IsNotEmpty({ message: 'Description must not be empty' })
+  description: string;
+
+  @IsMongoId({ message: 'Invalid Chapter ID' })
+  @IsNotEmpty({ message: 'Chapter ID must not be empty' })
   chapterId: string;
 }

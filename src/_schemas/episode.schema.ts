@@ -15,13 +15,16 @@ export class Episode {
   title: string;
 
   @Prop({ required: true })
-  content: string;
-
-  @Prop({ required: true, default: false })
-  display: boolean;
+  album: string;
 
   @Prop({ required: true })
-  imageUrl: string;
+  artist: string;
+
+  @Prop({ required: false })
+  artWork: string;
+
+  @Prop({ required: true })
+  description: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,

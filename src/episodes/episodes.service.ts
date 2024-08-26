@@ -1,43 +1,31 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Episode, EpisodeDocument } from '../_schemas/episode.schema';
+import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
 import { CollectionDto } from 'src/_dtos/input.dto';
 import { CollectionResponse } from 'src/_dtos/output.dto';
-import { DocumentCollector } from 'src/common/executor/collector';
-import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
 import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
-import { UsersService } from 'src/users/users.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { DocumentCollector } from 'src/common/executor/collector';
+import { Episode, EpisodeDocument } from '../_schemas/episode.schema';
 
 @Injectable()
 export class EpisodesService {
   constructor(
     @InjectModel(Episode.name)
     private readonly episodeModel: Model<EpisodeDocument>,
-    private readonly usersService: UsersService,
+
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   async findAll(
     collectionDto: CollectionDto,
-    user: any,
   ): Promise<CollectionResponse<EpisodeDocument>> {
     try {
-      const userId = user?.sub;
-      const userLogin = await this.usersService.findById(userId);
       const collector = new DocumentCollector<EpisodeDocument>(
         this.episodeModel,
       );
-
-      if (userLogin?.premium) {
-        return collector.find(collectionDto);
-      }
-
-      return collector.find({
-        filter: { display: { $eq: 'true' } },
-        ...collectionDto,
-      });
+      return collector.find(collectionDto);
     } catch (error) {
       throw error;
     }
@@ -62,14 +50,14 @@ export class EpisodesService {
     file?: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Episode }> {
     try {
-      let imageUrl = createEpisodeDto.imageUrl;
+      let artWork = createEpisodeDto.artWork;
       if (file) {
         const uploadResponse =
           await this.cloudinaryService.uploadImageEpisodes(file);
-        imageUrl = uploadResponse.secure_url;
+        artWork = uploadResponse.secure_url;
       }
 
-      const episodeData = { ...createEpisodeDto, imageUrl };
+      const episodeData = { ...createEpisodeDto, artWork };
       const data = await this.episodeModel.create(episodeData);
 
       return {
@@ -93,15 +81,15 @@ export class EpisodesService {
         throw new NotFoundException(`Episode with id ${id} not found`);
       }
 
-      let imageUrl = updateEpisodeDto.imageUrl;
+      let artWork = updateEpisodeDto.artWork;
       if (file) {
         const uploadResponse =
           await this.cloudinaryService.uploadImageEpisodes(file);
-        imageUrl = uploadResponse.secure_url;
+        artWork = uploadResponse.secure_url;
 
-        if (currentEpisode.imageUrl) {
+        if (currentEpisode.artWork) {
           const publicId = this.cloudinaryService.extractPublicId(
-            currentEpisode.imageUrl,
+            currentEpisode.artWork,
           );
           await this.cloudinaryService.bulkDelete(
             [publicId],
@@ -110,7 +98,7 @@ export class EpisodesService {
         }
       }
 
-      const updatedData = { ...updateEpisodeDto, imageUrl };
+      const updatedData = { ...updateEpisodeDto, artWork };
 
       const data = await this.episodeModel
         .findByIdAndUpdate(id, updatedData, {
@@ -142,9 +130,9 @@ export class EpisodesService {
         throw new NotFoundException(`Episode with id ${id} not found`);
       }
 
-      if (episode.imageUrl) {
+      if (episode.artWork) {
         const publicId = this.cloudinaryService.extractPublicId(
-          episode.imageUrl,
+          episode.artWork,
         );
         await this.cloudinaryService.bulkDelete([publicId], 'podcast/episode');
       }

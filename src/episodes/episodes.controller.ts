@@ -7,18 +7,17 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
-  Req,
-  UseInterceptors,
   UploadedFile,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-import { EpisodesService } from './episodes.service';
-import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
-import { CollectionDto } from 'src/_dtos/input.dto';
-import { Episode } from 'src/_schemas/episode.schema';
-import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
-import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
+import { CollectionDto } from 'src/_dtos/input.dto';
+import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
+import { Episode } from 'src/_schemas/episode.schema';
+import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
+import { EpisodesService } from './episodes.service';
 
 @UseGuards(AccessTokenGuard)
 @Controller('episodes')
@@ -26,11 +25,8 @@ export class EpisodesController {
   constructor(private readonly episodesService: EpisodesService) {}
 
   @Get()
-  async findAll(
-    @Query() query: CollectionDto,
-    @Req() req: any,
-  ): Promise<{ data: Episode[] }> {
-    return this.episodesService.findAll(query, req.user);
+  async findAll(@Query() query: CollectionDto): Promise<{ data: Episode[] }> {
+    return this.episodesService.findAll(query);
   }
 
   @Get(':id')

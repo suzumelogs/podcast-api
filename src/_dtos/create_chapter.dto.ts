@@ -11,7 +11,7 @@ export class CreateChapterDto {
 
   url?: string;
 
-  @IsMongoId()
-  @IsNotEmpty({ message: 'BookId must not be empty' })
+  @IsMongoId({ message: 'Invalid Book ID' })
+  @IsNotEmpty({ message: 'Book Id must not be empty' })
   bookId: string;
 }
