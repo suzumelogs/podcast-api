@@ -57,4 +57,10 @@ export class EpisodesController {
   remove(@Param('id') id: string) {
     return this.episodesService.remove(id);
   }
+
+  @Get('audio/format-lyris')
+  async getLyrics(@Query('audioUri') audioUri: string): Promise<any> {
+    const results = await this.episodesService.transcribeAudio(audioUri);
+    return this.episodesService.formatLyrics(results);
+  }
 }

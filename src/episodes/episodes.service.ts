@@ -8,14 +8,18 @@ import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { DocumentCollector } from 'src/common/executor/collector';
 import { Episode, EpisodeDocument } from '../_schemas/episode.schema';
+import { SpeechClient } from '@google-cloud/speech';
 
 @Injectable()
 export class EpisodesService {
+  private readonly client: SpeechClient;
   constructor(
     @InjectModel(Episode.name)
     private readonly episodeModel: Model<EpisodeDocument>,
     private readonly cloudinaryService: CloudinaryService,
-  ) {}
+  ) {
+    this.client = new SpeechClient();
+  }
 
   async findAll(
     collectionDto: CollectionDto,
@@ -145,5 +149,38 @@ export class EpisodesService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async transcribeAudio(uri: string): Promise<any> {
+    const request = {
+      audio: {
+        uri: uri,
+      },
+      config: {
+        encoding: 'LINEAR16' as const,
+        sampleRateHertz: 16000,
+        languageCode: 'en-US',
+        enableWordTimeOffsets: true,
+      },
+    };
+
+    try {
+      const [response] = await this.client.recognize(request);
+      return this.formatLyrics(response.results);
+    } catch (error) {
+      console.error('Error transcribing audio:', error);
+      throw error;
+    }
+  }
+
+  async formatLyrics(results: any): Promise<any> {
+    const lyrics = results.flatMap((result: any) =>
+      result.alternatives[0].words.map((word: any) => ({
+        time: Math.floor(word.startTime.seconds),
+        text: word.word,
+      })),
+    );
+
+    return { lyrics };
   }
 }
