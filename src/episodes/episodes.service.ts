@@ -14,7 +14,6 @@ export class EpisodesService {
   constructor(
     @InjectModel(Episode.name)
     private readonly episodeModel: Model<EpisodeDocument>,
-
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
