@@ -57,4 +57,10 @@ export class ChaptersController {
   remove(@Param('id') id: string) {
     return this.chaptersService.remove(id);
   }
+
+  @Get('value-labels/chapter')
+  async getChapterValueLabels() {
+    const valueLabels = await this.chaptersService.getChapterValueLabels();
+    return valueLabels;
+  }
 }

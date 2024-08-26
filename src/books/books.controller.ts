@@ -58,9 +58,9 @@ export class BooksController {
     return this.booksService.remove(id);
   }
 
-  @Get('value-label')
-  async findAllValueLabels() {
-    const valueLabels = await this.booksService.findAllValueLabel();
+  @Get('value-labels/book')
+  async getBookValueLabels() {
+    const valueLabels = await this.booksService.getBookValueLabels();
     return valueLabels;
   }
 }

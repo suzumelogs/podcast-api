@@ -142,4 +142,16 @@ export class ChaptersService {
       throw error;
     }
   }
+
+  async getChapterValueLabels(): Promise<{ label: string; value: string }[]> {
+    try {
+      const chapters = await this.chapterModel.find().lean();
+      return chapters.map((chapter) => ({
+        label: chapter.name,
+        value: chapter._id.toString(),
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
 }
