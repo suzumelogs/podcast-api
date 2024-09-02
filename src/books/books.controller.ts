@@ -8,18 +8,15 @@ import {
   Post,
   Query,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
-import { AccessTokenGuard } from '../common/gaurds/gaurd.access_token';
 import { Book } from '../_schemas/book.schema';
 import { CreateBookDto } from '../_dtos/create_book.dto';
 import { UpdateBookDto } from '../_dtos/update_book.dto';
 import { CollectionDto } from '../_dtos/input.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-@UseGuards(AccessTokenGuard)
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}

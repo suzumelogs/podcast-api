@@ -19,7 +19,6 @@ import { Chapter } from 'src/_schemas/chapter.schema';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
 import { ChaptersService } from './chapters.service';
 
-@UseGuards(AccessTokenGuard)
 @Controller('chapters')
 export class ChaptersController {
   constructor(private readonly chaptersService: ChaptersService) {}

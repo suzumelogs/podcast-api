@@ -14,7 +14,6 @@ import { UpdateUserDto } from '../_dtos/update_user.dto';
 import { User } from '../_schemas/user.schema';
 import { UsersService } from './users.service';
 
-@UseGuards(AccessTokenGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}

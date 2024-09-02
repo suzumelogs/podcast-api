@@ -19,7 +19,6 @@ export class AuthController {
     return this.authService.signIn(data);
   }
 
-  @UseGuards(AccessTokenGuard)
   @Get('logout')
   logout(@AuthUser('sub') sub: string) {
     return this.authService.logout(sub);
@@ -33,7 +32,6 @@ export class AuthController {
     return this.authService.refreshTokens(sub, refreshToken);
   }
 
-  @UseGuards(AccessTokenGuard)
   @Get('me')
   getMe(@Req() req: any) {
     const userId = req.user.sub;
