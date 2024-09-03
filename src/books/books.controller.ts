@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
@@ -17,6 +18,7 @@ import { UpdateBookDto } from '../_dtos/update_book.dto';
 import { CollectionDto } from '../_dtos/input.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
 
 @ApiTags('Books')
 @ApiBearerAuth('JWT-auth')

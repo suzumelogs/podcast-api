@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -17,6 +18,7 @@ import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
 import { Episode } from 'src/_schemas/episode.schema';
 import { EpisodesService } from './episodes.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
 
 @ApiTags('Episodes')
 @ApiBearerAuth('JWT-auth')
