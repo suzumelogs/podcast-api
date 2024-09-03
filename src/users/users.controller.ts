@@ -13,9 +13,10 @@ import { CreateUserDto } from '../_dtos/create_user.dto';
 import { UpdateUserDto } from '../_dtos/update_user.dto';
 import { User } from '../_schemas/user.schema';
 import { UsersService } from './users.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users')
+@ApiBearerAuth('JWT-auth')
 @UseGuards(AccessTokenGuard)
 @Controller('users')
 export class UsersController {
