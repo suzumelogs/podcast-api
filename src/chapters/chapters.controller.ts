@@ -18,7 +18,11 @@ import { UpdateChapterDto } from 'src/_dtos/update_chapter.dto';
 import { Chapter } from 'src/_schemas/chapter.schema';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
 import { ChaptersService } from './chapters.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Chapters')
+@ApiBearerAuth('JWT-auth')
+@UseGuards(AccessTokenGuard)
 @Controller('chapters')
 export class ChaptersController {
   constructor(private readonly chaptersService: ChaptersService) {}

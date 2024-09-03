@@ -16,7 +16,11 @@ import { CreateBookDto } from '../_dtos/create_book.dto';
 import { UpdateBookDto } from '../_dtos/update_book.dto';
 import { CollectionDto } from '../_dtos/input.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Books')
+@ApiBearerAuth('JWT-auth')
+@UseGuards(AccessTokenGuard)
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
