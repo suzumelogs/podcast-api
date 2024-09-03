@@ -5,6 +5,9 @@ import { RefreshTokenGuard } from '../common/gaurds/gaurd.refresh_token';
 import { AuthDto } from '../_dtos/auth.dto';
 import { CreateUserDto } from '../_dtos/create_user.dto';
 import { AuthService } from './auth.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -19,11 +22,13 @@ export class AuthController {
     return this.authService.signIn(data);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(AccessTokenGuard)
   @Get('logout')
   logout(@AuthUser('sub') sub: string) {
     return this.authService.logout(sub);
   }
+
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
   refreshTokens(
@@ -33,6 +38,7 @@ export class AuthController {
     return this.authService.refreshTokens(sub, refreshToken);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(AccessTokenGuard)
   @Get('me')
   getMe(@Req() req: any) {
