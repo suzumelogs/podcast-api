@@ -66,4 +66,9 @@ export class ChaptersController {
     const valueLabels = await this.chaptersService.getChapterValueLabels();
     return valueLabels;
   }
+
+  @Get('book/:bookId')
+  async findByBookId(@Param('bookId') bookId: string) {
+    return this.chaptersService.findByBookId(bookId);
+  }
 }

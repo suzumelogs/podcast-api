@@ -146,4 +146,22 @@ export class EpisodesService {
       throw error;
     }
   }
+
+  async findByChapterId(
+    chapterId: string,
+  ): Promise<{ statusCode: number; data: Episode[] }> {
+    try {
+      const episodes = await this.episodeModel
+        .find({ chapterId })
+        .lean()
+        .exec();
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: episodes.length ? episodes : [],
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

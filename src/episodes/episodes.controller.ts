@@ -60,4 +60,9 @@ export class EpisodesController {
   remove(@Param('id') id: string) {
     return this.episodesService.remove(id);
   }
+
+  @Get('chapter/:chapterId')
+  async findByChapterId(@Param('bookId') bookId: string) {
+    return this.episodesService.findByChapterId(bookId);
+  }
 }

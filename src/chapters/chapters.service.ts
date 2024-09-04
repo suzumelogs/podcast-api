@@ -154,4 +154,19 @@ export class ChaptersService {
       throw error;
     }
   }
+
+  async findByBookId(
+    bookId: string,
+  ): Promise<{ statusCode: number; data: Chapter[] }> {
+    try {
+      const chapters = await this.chapterModel.find({ bookId }).lean().exec();
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: chapters.length ? chapters : [],
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }
