@@ -62,8 +62,8 @@ export class EpisodesController {
   }
 
   @Get('chapter/:chapterId')
-  async findByChapterId(@Param('bookId') bookId: string) {
-    return this.episodesService.findByChapterId(bookId);
+  async findByChapterId(@Param('chapterId') chapterId: string) {
+    return this.episodesService.findByChapterId(chapterId);
   }
 
   @Get('chapter/:chapterId/prev/:currentEpisodeId/auto-click')
