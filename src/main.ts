@@ -11,7 +11,7 @@ async function bootstrap() {
 
   const options = new DocumentBuilder()
     .setTitle('Podcast API')
-    .setDescription('All')
+    .setDescription('Xin chào đã đến với 1 đống enpoint podcast api !!!')
     .setVersion('1.0')
     .addBearerAuth(
       {
