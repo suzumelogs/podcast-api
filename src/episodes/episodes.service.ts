@@ -164,4 +164,64 @@ export class EpisodesService {
       throw error;
     }
   }
+
+  async findNextEpisode(
+    chapterId: string,
+    currentEpisodeId: string,
+  ): Promise<{ statusCode: number; data: Episode | null }> {
+    try {
+      const currentEpisode = await this.episodeModel
+        .findById(currentEpisodeId)
+        .exec();
+
+      if (!currentEpisode) {
+        throw new NotFoundException(
+          `Current episode with id ${currentEpisodeId} not found`,
+        );
+      }
+
+      const nextEpisode = await this.episodeModel
+        .findOne({ chapterId, _id: { $ne: currentEpisodeId } })
+        .sort({ createdAt: 1 })
+        .lean()
+        .exec();
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: nextEpisode || null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findPrevEpisode(
+    chapterId: string,
+    currentEpisodeId: string,
+  ): Promise<{ statusCode: number; data: Episode | null }> {
+    try {
+      const currentEpisode = await this.episodeModel
+        .findById(currentEpisodeId)
+        .exec();
+
+      if (!currentEpisode) {
+        throw new NotFoundException(
+          `Current episode with id ${currentEpisodeId} not found`,
+        );
+      }
+
+      const prevEpisode = await this.episodeModel
+        .findOne({ chapterId, _id: { $ne: currentEpisodeId } })
+        .sort({ createdAt: -1 })
+        .lean()
+        .exec();
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: prevEpisode || null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

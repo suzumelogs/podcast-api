@@ -65,4 +65,36 @@ export class EpisodesController {
   async findByChapterId(@Param('bookId') bookId: string) {
     return this.episodesService.findByChapterId(bookId);
   }
+
+  @Get('chapter/:chapterId/prev/:currentEpisodeId/auto-click')
+  async findPrevEpisodeAutoClick(
+    @Param('chapterId') chapterId: string,
+    @Param('currentEpisodeId') currentEpisodeId: string,
+  ) {
+    return this.episodesService.findPrevEpisode(chapterId, currentEpisodeId);
+  }
+
+  @Get('chapter/:chapterId/next/:currentEpisodeId/auto-click')
+  async findNextEpisodeAutoClick(
+    @Param('chapterId') chapterId: string,
+    @Param('currentEpisodeId') currentEpisodeId: string,
+  ) {
+    return this.episodesService.findNextEpisode(chapterId, currentEpisodeId);
+  }
+
+  @Post('chapter/:chapterId/prev/:currentEpisodeId/click')
+  async findPrevEpisodeClick(
+    @Param('chapterId') chapterId: string,
+    @Param('currentEpisodeId') currentEpisodeId: string,
+  ) {
+    return this.episodesService.findPrevEpisode(chapterId, currentEpisodeId);
+  }
+
+  @Post('chapter/:chapterId/next/:currentEpisodeId/click')
+  async findNextEpisodeClick(
+    @Param('chapterId') chapterId: string,
+    @Param('currentEpisodeId') currentEpisodeId: string,
+  ) {
+    return this.episodesService.findNextEpisode(chapterId, currentEpisodeId);
+  }
 }

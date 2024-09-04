@@ -169,4 +169,64 @@ export class ChaptersService {
       throw error;
     }
   }
+
+  async findNextChapter(
+    bookId: string,
+    currentChapterId: string,
+  ): Promise<{ statusCode: number; data: Chapter | null }> {
+    try {
+      const currentChapter = await this.chapterModel
+        .findById(currentChapterId)
+        .exec();
+
+      if (!currentChapter) {
+        throw new NotFoundException(
+          `Current chapter with id ${currentChapterId} not found`,
+        );
+      }
+
+      const nextChapter = await this.chapterModel
+        .findOne({ bookId, _id: { $ne: currentChapterId } })
+        .sort({ createdAt: 1 })
+        .lean()
+        .exec();
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: nextChapter || null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findPrevChapter(
+    bookId: string,
+    currentChapterId: string,
+  ): Promise<{ statusCode: number; data: Chapter | null }> {
+    try {
+      const currentChapter = await this.chapterModel
+        .findById(currentChapterId)
+        .exec();
+
+      if (!currentChapter) {
+        throw new NotFoundException(
+          `Current chapter with id ${currentChapterId} not found`,
+        );
+      }
+
+      const prevChapter = await this.chapterModel
+        .findOne({ bookId, _id: { $ne: currentChapterId } })
+        .sort({ createdAt: -1 })
+        .lean()
+        .exec();
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: prevChapter || null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

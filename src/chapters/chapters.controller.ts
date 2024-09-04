@@ -71,4 +71,36 @@ export class ChaptersController {
   async findByBookId(@Param('bookId') bookId: string) {
     return this.chaptersService.findByBookId(bookId);
   }
+
+  @Get('book/:bookId/chapter/:currentChapterId/prev/auto-click')
+  async findPrevChapterAutoClick(
+    @Param('bookId') bookId: string,
+    @Param('currentChapterId') currentChapterId: string,
+  ) {
+    return this.chaptersService.findPrevChapter(bookId, currentChapterId);
+  }
+
+  @Get('book/:bookId/chapter/:currentChapterId/next/auto-click')
+  async findNextChapterAutoClick(
+    @Param('bookId') bookId: string,
+    @Param('currentChapterId') currentChapterId: string,
+  ) {
+    return this.chaptersService.findNextChapter(bookId, currentChapterId);
+  }
+
+  @Post('book/:bookId/chapter/:currentChapterId/prev/click')
+  async findPrevChapterClick(
+    @Param('bookId') bookId: string,
+    @Param('currentChapterId') currentChapterId: string,
+  ) {
+    return this.chaptersService.findPrevChapter(bookId, currentChapterId);
+  }
+
+  @Post('book/:bookId/chapter/:currentChapterId/next/click')
+  async findNextChapterClick(
+    @Param('bookId') bookId: string,
+    @Param('currentChapterId') currentChapterId: string,
+  ) {
+    return this.chaptersService.findNextChapter(bookId, currentChapterId);
+  }
 }
