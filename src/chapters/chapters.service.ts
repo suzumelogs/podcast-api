@@ -193,6 +193,7 @@ export class ChaptersService {
       const nextChapter = await this.chapterModel
         .findOne({ bookId, _id: { $ne: currentChapterId } })
         .sort({ createdAt: 1 })
+        .populate('bookId')
         .lean()
         .exec();
 
@@ -223,6 +224,7 @@ export class ChaptersService {
       const prevChapter = await this.chapterModel
         .findOne({ bookId, _id: { $ne: currentChapterId } })
         .sort({ createdAt: -1 })
+        .populate('bookId')
         .lean()
         .exec();
 

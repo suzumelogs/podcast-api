@@ -199,6 +199,12 @@ export class EpisodesService {
       const nextEpisode = await this.episodeModel
         .findOne({ chapterId, _id: { $ne: currentEpisodeId } })
         .sort({ createdAt: 1 })
+        .populate({
+          path: 'chapterId',
+          populate: {
+            path: 'bookId',
+          },
+        })
         .lean()
         .exec();
 
@@ -229,6 +235,12 @@ export class EpisodesService {
       const prevEpisode = await this.episodeModel
         .findOne({ chapterId, _id: { $ne: currentEpisodeId } })
         .sort({ createdAt: -1 })
+        .populate({
+          path: 'chapterId',
+          populate: {
+            path: 'bookId',
+          },
+        })
         .lean()
         .exec();
 
