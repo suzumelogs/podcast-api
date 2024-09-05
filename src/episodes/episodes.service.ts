@@ -15,7 +15,7 @@ export class EpisodesService {
     @InjectModel(Episode.name)
     private readonly episodeModel: Model<EpisodeDocument>,
     private readonly cloudinaryService: CloudinaryService,
-  ) { }
+  ) {}
 
   async findAll(
     collectionDto: CollectionDto,
@@ -154,6 +154,12 @@ export class EpisodesService {
       const episodes = await this.episodeModel
         .find({ chapterId })
         .sort({ createdAt: -1 })
+        .populate({
+          path: 'chapterId',
+          populate: {
+            path: 'bookId',
+          },
+        })
         .lean()
         .exec();
 
