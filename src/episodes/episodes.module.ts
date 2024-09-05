@@ -6,6 +6,7 @@ import { Episode, EpisodeSchema } from '../_schemas/episode.schema';
 import { User, UserSchema } from '../_schemas/user.schema';
 import { UsersService } from 'src/users/users.service';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   controllers: [EpisodesController],
-  providers: [EpisodesService, UsersService, CloudinaryService],
+  providers: [EpisodesService, UsersService, CloudinaryService, ConfigService],
   exports: [EpisodesService, UsersService],
 })
-export class EpisodesModule {}
+export class EpisodesModule { }

@@ -30,6 +30,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.4.0",
     "argon2": "^0.40.3",
+    "assemblyai": "^4.7.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "cloudinary": "^2.4.0",
@@ -86,7 +87,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
-    "engines": {
+  "engines": {
     "node": ">=20.16.0"
-  } 
+  }
 }

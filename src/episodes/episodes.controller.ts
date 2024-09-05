@@ -25,7 +25,7 @@ import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
 @UseGuards(AccessTokenGuard)
 @Controller('episodes')
 export class EpisodesController {
-  constructor(private readonly episodesService: EpisodesService) {}
+  constructor(private readonly episodesService: EpisodesService) { }
 
   @Get()
   async findAll(@Query() query: CollectionDto): Promise<{ data: Episode[] }> {
@@ -96,5 +96,10 @@ export class EpisodesController {
     @Param('currentEpisodeId') currentEpisodeId: string,
   ) {
     return this.episodesService.findNextEpisode(chapterId, currentEpisodeId);
+  }
+
+  @Post(':id/transcribe')
+  async transcribeAudio(@Param('id') id: string) {
+    return this.episodesService.transcribeAudio(id);
   }
 }

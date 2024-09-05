@@ -8,14 +8,23 @@ import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { DocumentCollector } from 'src/common/executor/collector';
 import { Episode, EpisodeDocument } from '../_schemas/episode.schema';
+import { AssemblyAI } from 'assemblyai';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EpisodesService {
+  private readonly assemblyAIClient: AssemblyAI;
+
   constructor(
     @InjectModel(Episode.name)
     private readonly episodeModel: Model<EpisodeDocument>,
     private readonly cloudinaryService: CloudinaryService,
-  ) { }
+    private configService: ConfigService,
+  ) {
+    this.assemblyAIClient = new AssemblyAI({
+      apiKey: this.configService.get<string>('ASSEMBLYAI_API_KEY'),
+    });
+  }
 
   async findAll(
     collectionDto: CollectionDto,
@@ -220,6 +229,42 @@ export class EpisodesService {
       return {
         statusCode: HttpStatus.OK,
         data: prevEpisode || null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async transcribeAudio(
+    episodeId: string,
+  ): Promise<{ statusCode: number; transcription: string }> {
+    try {
+      // Tìm kiếm tập tin podcast theo ID
+      const episode = await this.episodeModel.findById(episodeId).exec();
+
+      if (!episode) {
+        // Kiểm tra xem tập tin có tồn tại và URL âm thanh có không
+        throw new NotFoundException(
+          `Episode with id ${episodeId} not found or audio URL is missing`,
+        );
+      }
+
+      // Gửi yêu cầu transcribe âm thanh tới AssemblyAI
+      const transcription = await this.assemblyAIClient.transcripts.transcribe({
+        audio_url: "https://res.cloudinary.com/dp4ej9jje/video/upload/v1725530456/osuntx8wwxkmays2oype.mp3", // Sử dụng URL âm thanh từ episode
+      });
+
+      // Chờ đợi quá trình nhận diện hoàn tất
+      let result;
+      do {
+        result = await this.assemblyAIClient.transcripts.get(transcription.id);
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Chờ 5 giây trước khi kiểm tra lại
+      } while (result.status !== 'completed');
+
+      // Trả về kết quả nhận diện
+      return {
+        statusCode: HttpStatus.OK,
+        transcription: result.text,
       };
     } catch (error) {
       throw error;
