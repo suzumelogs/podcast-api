@@ -27,10 +27,18 @@ export class CreateEpisodeDto {
   artist: string;
 
   @ApiPropertyOptional({
-    description: 'Artwork của tập (nếu có)',
+    description: 'artwork của tập (nếu có)',
     example: 'http://example.com/artwork.jpg',
   })
-  artWork?: string;
+  artwork?: string;
+
+  @ApiProperty({
+    description: 'URL audio của tập',
+    example: 'http://example.com/audio.mp3',
+  })
+  @IsString()
+  @IsNotEmpty({ message: 'Audio URL must not be empty' })
+  audio_url: string;
 
   @ApiProperty({
     description: 'Mô tả của tập',

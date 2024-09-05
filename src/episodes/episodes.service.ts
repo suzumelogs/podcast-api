@@ -15,7 +15,7 @@ export class EpisodesService {
     @InjectModel(Episode.name)
     private readonly episodeModel: Model<EpisodeDocument>,
     private readonly cloudinaryService: CloudinaryService,
-  ) {}
+  ) { }
 
   async findAll(
     collectionDto: CollectionDto,
@@ -49,14 +49,14 @@ export class EpisodesService {
     file?: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Episode }> {
     try {
-      let artWork = createEpisodeDto.artWork;
+      let artwork = createEpisodeDto.artwork;
       if (file) {
         const uploadResponse =
           await this.cloudinaryService.uploadImageEpisodes(file);
-        artWork = uploadResponse.secure_url;
+        artwork = uploadResponse.secure_url;
       }
 
-      const episodeData = { ...createEpisodeDto, artWork };
+      const episodeData = { ...createEpisodeDto, artwork };
       const data = await this.episodeModel.create(episodeData);
 
       return {
@@ -80,15 +80,15 @@ export class EpisodesService {
         throw new NotFoundException(`Episode with id ${id} not found`);
       }
 
-      let artWork = updateEpisodeDto.artWork;
+      let artwork = updateEpisodeDto.artwork;
       if (file) {
         const uploadResponse =
           await this.cloudinaryService.uploadImageEpisodes(file);
-        artWork = uploadResponse.secure_url;
+        artwork = uploadResponse.secure_url;
 
-        if (currentEpisode.artWork) {
+        if (currentEpisode.artwork) {
           const publicId = this.cloudinaryService.extractPublicId(
-            currentEpisode.artWork,
+            currentEpisode.artwork,
           );
           await this.cloudinaryService.bulkDelete(
             [publicId],
@@ -97,7 +97,7 @@ export class EpisodesService {
         }
       }
 
-      const updatedData = { ...updateEpisodeDto, artWork };
+      const updatedData = { ...updateEpisodeDto, artwork };
 
       const data = await this.episodeModel
         .findByIdAndUpdate(id, updatedData, {
@@ -129,9 +129,9 @@ export class EpisodesService {
         throw new NotFoundException(`Episode with id ${id} not found`);
       }
 
-      if (episode.artWork) {
+      if (episode.artwork) {
         const publicId = this.cloudinaryService.extractPublicId(
-          episode.artWork,
+          episode.artwork,
         );
         await this.cloudinaryService.bulkDelete([publicId], 'podcast/episode');
       }

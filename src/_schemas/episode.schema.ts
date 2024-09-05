@@ -21,7 +21,10 @@ export class Episode {
   artist: string;
 
   @Prop({ required: false })
-  artWork: string;
+  artwork: string;
+
+  @Prop({ required: false })
+  audio_url: string;
 
   @Prop({ required: true })
   description: string;
