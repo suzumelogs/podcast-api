@@ -8,14 +8,23 @@ import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { DocumentCollector } from 'src/common/executor/collector';
 import { Episode, EpisodeDocument } from '../_schemas/episode.schema';
+import { AssemblyAI } from 'assemblyai';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EpisodesService {
+  private readonly assemblyAIClient: AssemblyAI;
+
   constructor(
     @InjectModel(Episode.name)
     private readonly episodeModel: Model<EpisodeDocument>,
     private readonly cloudinaryService: CloudinaryService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.assemblyAIClient = new AssemblyAI({
+      apiKey: this.configService.get<string>('ASSEMBLYAI_API_KEY'),
+    });
+  }
 
   async findAll(
     collectionDto: CollectionDto,
@@ -226,6 +235,40 @@ export class EpisodesService {
       return {
         statusCode: HttpStatus.OK,
         data: prevEpisode || null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async transcribeurl(
+    episodeId: string,
+  ): Promise<{ statusCode: number; transcription: string }> {
+    try {
+      const episode = await this.episodeModel.findById(episodeId).exec();
+
+      if (!episode || !episode.url) {
+        throw new NotFoundException(
+          `Episode with id ${episodeId} not found or url URL is missing`,
+        );
+      }
+
+      const transcription = await this.assemblyAIClient.transcripts.transcribe({
+        audio_url: episode.url,
+      });
+
+      let result;
+      while (true) {
+        result = await this.assemblyAIClient.transcripts.get(transcription.id);
+        if (result.status === 'completed') {
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 5000));
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        transcription: result.text,
       };
     } catch (error) {
       throw error;

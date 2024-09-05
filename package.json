@@ -8,10 +8,10 @@
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "NODE_OPTIONS='--max-old-space-size=4096' nest start",
-    "start:dev": "NODE_OPTIONS='--max-old-space-size=4096' nest start --watch",
-    "start:debug": "NODE_OPTIONS='--max-old-space-size=4096' nest start --debug --watch",
-    "start:prod": "NODE_OPTIONS='--max-old-space-size=4096' node dist/main",
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -30,6 +30,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.4.0",
     "argon2": "^0.40.3",
+    "assemblyai": "^4.7.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "cloudinary": "^2.4.0",
@@ -86,7 +87,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   },
-    "engines": {
+  "engines": {
     "node": ">=20.16.0"
-  } 
+  }
 }

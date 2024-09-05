@@ -33,12 +33,12 @@ export class CreateEpisodeDto {
   artwork?: string;
 
   @ApiProperty({
-    description: 'URL audio của tập',
-    example: 'http://example.com/audio.mp3',
+    description: 'URL url của tập',
+    example: 'http://example.com/url.mp3',
   })
   @IsString()
-  @IsNotEmpty({ message: 'Audio URL must not be empty' })
-  audio: string;
+  @IsNotEmpty({ message: 'url URL must not be empty' })
+  url: string;
 
   @ApiProperty({
     description: 'Mô tả của tập',
