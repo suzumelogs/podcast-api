@@ -241,30 +241,27 @@ export class EpisodesService {
     }
   }
 
-  async transcribeurl(
+  async transcribeAudioUrl(
     episodeId: string,
   ): Promise<{ statusCode: number; transcription: string }> {
     try {
       const episode = await this.episodeModel.findById(episodeId).exec();
+      if (!episode) {
+        throw new NotFoundException(`Episode with id ${episodeId} not found`);
+      }
 
-      if (!episode || !episode.url) {
+      if (!episode.url || !episode) {
         throw new NotFoundException(
-          `Episode with id ${episodeId} not found or url URL is missing`,
+          `URL is missing for episode with id ${episodeId}`,
         );
       }
 
-      const transcription = await this.assemblyAIClient.transcripts.transcribe({
-        audio_url: episode.url,
-      });
+      const { id: transcriptId } =
+        await this.assemblyAIClient.transcripts.transcribe({
+          audio_url: episode.url,
+        });
 
-      let result;
-      while (true) {
-        result = await this.assemblyAIClient.transcripts.get(transcription.id);
-        if (result.status === 'completed') {
-          break;
-        }
-        await new Promise((resolve) => setTimeout(resolve, 5000));
-      }
+      const result = await this.pollTranscriptionStatus(transcriptId);
 
       return {
         statusCode: HttpStatus.OK,
@@ -273,5 +270,22 @@ export class EpisodesService {
     } catch (error) {
       throw error;
     }
+  }
+
+  private async pollTranscriptionStatus(
+    transcriptId: string,
+    interval: number = 5000,
+  ): Promise<any> {
+    while (true) {
+      const result = await this.assemblyAIClient.transcripts.get(transcriptId);
+      if (result.status === 'completed') {
+        return result;
+      }
+      await this.delay(interval);
+    }
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

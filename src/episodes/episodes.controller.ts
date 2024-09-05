@@ -97,4 +97,9 @@ export class EpisodesController {
   ) {
     return this.episodesService.findNextEpisode(chapterId, currentEpisodeId);
   }
+
+  @Post(':id/audio-url/transcribe')
+  async transcribeAudio(@Param('id') id: string) {
+    return this.episodesService.transcribeAudioUrl(id);
+  }
 }
