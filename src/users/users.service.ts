@@ -4,16 +4,22 @@ import { Model } from 'mongoose';
 import { CreateUserDto } from '../_dtos/create_user.dto';
 import { UpdateUserDto } from '../_dtos/update_user.dto';
 import { User, UserDocument } from '../_schemas/user.schema';
+import { CollectionDto } from 'src/_dtos/input.dto';
+import { CollectionResponse } from 'src/_dtos/output.dto';
+import { DocumentCollector } from 'src/common/executor/collector';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-  ) {}
+  ) { }
 
-  async findAll(): Promise<User[]> {
+  async findAll(
+    collectionDto: CollectionDto,
+  ): Promise<CollectionResponse<UserDocument>> {
     try {
-      return await this.userModel.find().lean().exec();
+      const collector = new DocumentCollector<UserDocument>(this.userModel);
+      return collector.find(collectionDto);
     } catch (error) {
       throw error;
     }

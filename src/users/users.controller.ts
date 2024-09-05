@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AccessTokenGuard } from '../common/gaurds/gaurd.access_token';
@@ -14,13 +15,14 @@ import { UpdateUserDto } from '../_dtos/update_user.dto';
 import { User } from '../_schemas/user.schema';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CollectionDto } from 'src/_dtos/input.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
 @UseGuards(AccessTokenGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -28,8 +30,8 @@ export class UsersController {
   }
 
   @Get()
-  async findAll(): Promise<User[]> {
-    return (await this.usersService.findAll()).map((x) => new User(x));
+  async findAll(@Query() query: CollectionDto): Promise<{ data: User[] }> {
+    return this.usersService.findAll(query);
   }
 
   @Get(':id')
