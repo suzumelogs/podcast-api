@@ -38,7 +38,7 @@ export class CreateEpisodeDto {
   })
   @IsString()
   @IsNotEmpty({ message: 'Audio URL must not be empty' })
-  audio_url: string;
+  audioUrl: string;
 
   @ApiProperty({
     description: 'Mô tả của tập',
