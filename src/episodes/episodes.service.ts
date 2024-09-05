@@ -153,6 +153,7 @@ export class EpisodesService {
     try {
       const episodes = await this.episodeModel
         .find({ chapterId })
+        .sort({ createdAt: -1 })
         .lean()
         .exec();
 

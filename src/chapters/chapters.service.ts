@@ -15,7 +15,7 @@ export class ChaptersService {
     @InjectModel(Chapter.name)
     private readonly chapterModel: Model<ChapterDocument>,
     private readonly cloudinaryService: CloudinaryService,
-  ) {}
+  ) { }
 
   async findAll(
     collectionDto: CollectionDto,
@@ -159,7 +159,11 @@ export class ChaptersService {
     bookId: string,
   ): Promise<{ statusCode: number; data: Chapter[] }> {
     try {
-      const chapters = await this.chapterModel.find({ bookId }).lean().exec();
+      const chapters = await this.chapterModel
+        .find({ bookId })
+        .sort({ createdAt: -1 })
+        .lean()
+        .exec();
 
       return {
         statusCode: HttpStatus.OK,
