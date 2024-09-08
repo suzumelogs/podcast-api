@@ -128,4 +128,32 @@ export class UsersService {
       throw error;
     }
   }
+
+  async unmarkAsFavorite(
+    userId: string,
+    episodeId: string,
+  ): Promise<{ statusCode: number; message: string }> {
+    try {
+      const updatedUser = await this.userModel
+        .findByIdAndUpdate(
+          userId,
+          { $pull: { favorites: episodeId } },
+          { new: true },
+        )
+        .exec();
+
+      if (!updatedUser) {
+        throw new NotFoundException(`User with id ${userId} not found`);
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Episode removed from favorites successfully',
+      };
+    } catch (error) {
+      throw new Error(
+        `Error removing episode from favorites: ${error.message}`,
+      );
+    }
+  }
 }

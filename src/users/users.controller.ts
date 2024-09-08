@@ -56,4 +56,12 @@ export class UsersController {
   ): Promise<{ statusCode: number; message: string }> {
     return this.usersService.markAsFavorite(userId, episodeId);
   }
+
+  @Patch(':userId/unmark-favorite/:episodeId')
+  async unmarkAsFavorite(
+    @Param('userId') userId: string,
+    @Param('episodeId') episodeId: string,
+  ): Promise<{ statusCode: number; message: string }> {
+    return this.usersService.unmarkAsFavorite(userId, episodeId);
+  }
 }
