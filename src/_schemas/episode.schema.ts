@@ -32,9 +32,6 @@ export class Episode {
   @Prop({ default: true })
   isPremium: boolean;
 
-  @Prop({ default: false })
-  isFavorite: boolean;
-
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Chapter',
