@@ -29,6 +29,9 @@ export class Episode {
   @Prop({ required: true })
   description: string;
 
+  @Prop({ default: true })
+  isPremium: boolean;
+
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Chapter',

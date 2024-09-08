@@ -21,6 +21,9 @@ export class Book {
   @Prop({ required: false })
   url: string;
 
+  @Prop({ default: true })
+  isPremium: boolean;
+
   constructor(partial: Partial<Book>) {
     partial.id = partial._id.toString();
     Object.assign(this, partial);

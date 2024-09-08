@@ -21,6 +21,9 @@ export class Chapter {
   @Prop({ required: false })
   url: string;
 
+  @Prop({ default: true })
+  isPremium: boolean;
+
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Book',
