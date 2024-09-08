@@ -112,7 +112,7 @@ export class UsersService {
         .findByIdAndUpdate(
           userId,
           { $addToSet: { favorites: episodeId } },
-          { new: true },
+          { new: true, runValidators: true },
         )
         .exec();
 
@@ -138,7 +138,7 @@ export class UsersService {
         .findByIdAndUpdate(
           userId,
           { $pull: { favorites: episodeId } },
-          { new: true },
+          { new: true, runValidators: true },
         )
         .exec();
 
@@ -151,9 +151,7 @@ export class UsersService {
         message: 'Episode removed from favorites successfully',
       };
     } catch (error) {
-      throw new Error(
-        `Error removing episode from favorites: ${error.message}`,
-      );
+      throw error;
     }
   }
 }
