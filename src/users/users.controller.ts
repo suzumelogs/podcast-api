@@ -49,7 +49,7 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 
-  @Post(':userId/favorite/:episodeId')
+  @Patch(':userId/favorite/:episodeId')
   markAsFavorite(
     @Param('userId') userId: string,
     @Param('episodeId') episodeId: string,
