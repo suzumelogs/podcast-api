@@ -1,4 +1,4 @@
-import { NotFoundException, Injectable } from '@nestjs/common';
+import { NotFoundException, Injectable, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from '../_dtos/create_user.dto';
@@ -12,7 +12,7 @@ import { DocumentCollector } from 'src/common/executor/collector';
 export class UsersService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-  ) { }
+  ) {}
 
   async findAll(
     collectionDto: CollectionDto,
@@ -62,7 +62,7 @@ export class UsersService {
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
-  ): Promise<UserDocument> {
+  ): Promise<{ statusCode: number; message: string; data: User }> {
     try {
       const updatedUser = await this.userModel
         .findByIdAndUpdate(id, updateUserDto, {
@@ -76,7 +76,11 @@ export class UsersService {
         throw new NotFoundException(`User with id ${id} not found`);
       }
 
-      return updatedUser;
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Updated successfully',
+        data: updatedUser,
+      };
     } catch (error) {
       throw error;
     }

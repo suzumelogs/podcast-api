@@ -29,8 +29,17 @@ export class User {
   @Prop({ type: [String], enum: Role, default: [Role.USER] })
   roles: Role[];
 
-  @Prop({ required: true, default: false })
-  premium: boolean;
+  @Prop({ type: Date, nullable: true })
+  dateOfBirth: Date | null;
+
+  @Prop({ type: String, nullable: true })
+  gender: string | null;
+
+  @Prop({ type: String, nullable: true })
+  address: string | null;
+
+  @Prop({ type: String, nullable: true })
+  phoneNumber: string | null;
 
   @Exclude()
   @Prop()
