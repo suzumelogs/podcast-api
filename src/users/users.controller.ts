@@ -22,7 +22,7 @@ import { CollectionDto } from 'src/_dtos/input.dto';
 @UseGuards(AccessTokenGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -47,5 +47,13 @@ export class UsersController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  @Post(':userId/favorite/:episodeId')
+  markAsFavorite(
+    @Param('userId') userId: string,
+    @Param('episodeId') episodeId: string,
+  ): Promise<{ statusCode: number; message: string }> {
+    return this.usersService.markAsFavorite(userId, episodeId);
   }
 }

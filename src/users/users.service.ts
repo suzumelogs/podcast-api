@@ -102,4 +102,30 @@ export class UsersService {
       throw error;
     }
   }
+
+  async markAsFavorite(
+    userId: string,
+    episodeId: string,
+  ): Promise<{ statusCode: number; message: string }> {
+    try {
+      const updatedUser = await this.userModel
+        .findByIdAndUpdate(
+          userId,
+          { $addToSet: { favorites: episodeId } },
+          { new: true },
+        )
+        .exec();
+
+      if (!updatedUser) {
+        throw new NotFoundException(`User with id ${userId} not found`);
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Episode added to favorites successfully',
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

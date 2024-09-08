@@ -48,6 +48,9 @@ export class User {
   @Prop()
   refreshTokenExpiration: Date;
 
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Episode' }] })
+  favorites: mongoose.Types.ObjectId[];
+
   constructor(partial: Partial<User>) {
     partial.id = partial._id.toString();
     Object.assign(this, partial);
