@@ -145,4 +145,24 @@ export class AuthService {
       },
     };
   }
+
+  async changePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ): Promise<void> {
+    const user = await this.usersService.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const passwordMatches = await argon2.verify(user.password, currentPassword);
+    if (!passwordMatches) {
+      throw new BadRequestException('Current password is incorrect');
+    }
+
+    const hashedNewPassword = await this.hashData(newPassword);
+
+    await this.usersService.update(userId, { password: hashedNewPassword });
+  }
 }
