@@ -11,6 +11,8 @@ import { Episode, EpisodeDocument } from '../_schemas/episode.schema';
 import { AssemblyAI } from 'assemblyai';
 import { ConfigService } from '@nestjs/config';
 import { User, UserDocument } from 'src/_schemas/user.schema';
+import { Chapter, ChapterDocument } from 'src/_schemas/chapter.schema';
+import { Book, BookDocument } from 'src/_schemas/book.schema';
 
 @Injectable()
 export class EpisodesService {
@@ -21,6 +23,10 @@ export class EpisodesService {
     private readonly episodeModel: Model<EpisodeDocument>,
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+    @InjectModel(Chapter.name)
+    private readonly chapterModel: Model<ChapterDocument>,
+    @InjectModel(Book.name)
+    private readonly bookModel: Model<BookDocument>,
     private readonly cloudinaryService: CloudinaryService,
     private readonly configService: ConfigService,
   ) {
@@ -218,25 +224,61 @@ export class EpisodesService {
     }
   }
 
-  async findByChapterId(
-    chapterId: string,
-  ): Promise<{ statusCode: number; data: Episode[] }> {
+  // async findByChapterId(
+  //   chapterId: string,
+  // ): Promise<{ statusCode: number; data: Episode[] }> {
+  //   try {
+  //     const episodes = await this.episodeModel
+  //       .find({ chapterId })
+  //       .sort({ createdAt: -1 })
+  //       .populate({
+  //         path: 'chapterId',
+  //         populate: {
+  //           path: 'bookId',
+  //         },
+  //       })
+  //       .lean()
+  //       .exec();
+
+  //     return {
+  //       statusCode: HttpStatus.OK,
+  //       data: episodes.length ? episodes : [],
+  //     };
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  async findByChapterId(chapterId: string): Promise<{
+    statusCode: number;
+    data: { book: Book; chapter: Chapter; episodes: Episode[] };
+  }> {
     try {
+      const chapter = await this.chapterModel.findById(chapterId).lean().exec();
+
+      if (!chapter) {
+        throw new NotFoundException(`Chapter with id ${chapterId} not found`);
+      }
+
+      const book = await this.bookModel.findById(chapter.bookId).lean().exec();
+
+      if (!book) {
+        throw new NotFoundException(`Book with id ${chapter.bookId} not found`);
+      }
+
       const episodes = await this.episodeModel
         .find({ chapterId })
         .sort({ createdAt: -1 })
-        .populate({
-          path: 'chapterId',
-          populate: {
-            path: 'bookId',
-          },
-        })
         .lean()
         .exec();
 
       return {
         statusCode: HttpStatus.OK,
-        data: episodes.length ? episodes : [],
+        data: {
+          book,
+          chapter,
+          episodes,
+        },
       };
     } catch (error) {
       throw error;
