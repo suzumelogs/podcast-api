@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AccessTokenGuard } from '../common/gaurds/gaurd.access_token';
@@ -49,19 +50,21 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 
-  @Patch(':userId/favorite/:episodeId')
+  @Patch('favorite/episode/:episodeId')
   markAsFavorite(
-    @Param('userId') userId: string,
+    @Req() req: any,
     @Param('episodeId') episodeId: string,
   ): Promise<{ statusCode: number; message: string }> {
+    const userId = req.user.sub;
     return this.usersService.markAsFavorite(userId, episodeId);
   }
 
-  @Patch(':userId/unmark-favorite/:episodeId')
+  @Patch('unmark-f/episodeavorite/:episodeId')
   async unmarkAsFavorite(
-    @Param('userId') userId: string,
+    @Req() req: any,
     @Param('episodeId') episodeId: string,
   ): Promise<{ statusCode: number; message: string }> {
+    const userId = req.user.sub;
     return this.usersService.unmarkAsFavorite(userId, episodeId);
   }
 }
