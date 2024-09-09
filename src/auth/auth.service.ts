@@ -70,7 +70,7 @@ export class AuthService {
   async logout(userId: string) {
     await this.usersService.update(userId, { refreshToken: null });
     return {
-      statusCode: 200,
+      statusCode: HttpStatus.OK,
       message: 'Logged out successfully',
     };
   }
