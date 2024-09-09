@@ -12,16 +12,18 @@ import {
 import { AccessTokenGuard } from '../common/gaurds/gaurd.access_token';
 import { CreateUserDto } from '../_dtos/create_user.dto';
 import { UpdateUserDto } from '../_dtos/update_user.dto';
-import { User } from '../_schemas/user.schema';
+import { Role, User } from '../_schemas/user.schema';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CollectionDto } from 'src/_dtos/input.dto';
 import { UpdateProfileDto } from 'src/_dtos/update_profile.dto';
 import { AuthUser } from 'src/common/decorator/decorator.auth_user';
+import { RolesGuard } from 'src/common/gaurds/roles.guard';
+import { Roles } from 'src/common/decorator/roles.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(AccessTokenGuard)
+@UseGuards(AccessTokenGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -31,6 +33,7 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  @Roles(Role.ADMIN)
   @Get()
   async findAll(@Query() query: CollectionDto): Promise<{ data: User[] }> {
     return this.usersService.findAll(query);
