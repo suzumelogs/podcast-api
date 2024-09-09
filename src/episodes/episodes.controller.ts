@@ -51,8 +51,9 @@ export class EpisodesController {
   create(
     @Body() createEpisodeDto: CreateEpisodeDto,
     @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile() audioFile?: Express.Multer.File,
   ) {
-    return this.episodesService.create(createEpisodeDto, file);
+    return this.episodesService.create(createEpisodeDto, file, audioFile);
   }
 
   @Patch(':id')
@@ -61,8 +62,9 @@ export class EpisodesController {
     @Param('id') id: string,
     @Body() updateEpisodeDto: UpdateEpisodeDto,
     @UploadedFile() file?: Express.Multer.File,
+    @UploadedFile() audioFile?: Express.Multer.File,
   ) {
-    return this.episodesService.update(id, updateEpisodeDto, file);
+    return this.episodesService.update(id, updateEpisodeDto, file, audioFile);
   }
 
   @Delete(':id')

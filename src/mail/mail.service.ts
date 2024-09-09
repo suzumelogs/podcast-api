@@ -33,7 +33,7 @@ export class MailService {
     const mailOptions: nodemailer.SendMailOptions = {
       from: this.configService.get<string>('MAIL_FROM'),
       to: email,
-      subject: 'Password Reset Request',
+      subject: 'Password Reset - (Vua Sach)',
       text: `Your password reset code is ${resetToken}. It is valid for 5 minutes.`,
     };
 
