@@ -15,6 +15,9 @@ export class Book {
   name: string;
 
   @Prop({ required: true })
+  author: string;
+
+  @Prop({ required: true })
   description: string;
 
   // Image
