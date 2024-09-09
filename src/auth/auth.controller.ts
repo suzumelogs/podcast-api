@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Patch,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthUser } from '../common/decorator/decorator.auth_user';
 import { AccessTokenGuard } from '../common/gaurds/gaurd.access_token';
 import { RefreshTokenGuard } from '../common/gaurds/gaurd.refresh_token';
@@ -36,24 +28,23 @@ export class AuthController {
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AccessTokenGuard)
   @Get('logout')
-  logout(@AuthUser('sub') sub: string) {
-    return this.authService.logout(sub);
+  logout(@AuthUser('sub') userId: string) {
+    return this.authService.logout(userId);
   }
 
   @UseGuards(RefreshTokenGuard)
   @Get('refresh')
   refreshTokens(
-    @AuthUser('sub') sub: string,
+    @AuthUser('sub') userId: string,
     @AuthUser('refreshToken') refreshToken: string,
   ) {
-    return this.authService.refreshTokens(sub, refreshToken);
+    return this.authService.refreshTokens(userId, refreshToken);
   }
 
   @ApiBearerAuth('JWT-auth')
   @UseGuards(AccessTokenGuard)
   @Get('me')
-  getMe(@Req() req: any) {
-    const userId = req.user.sub;
+  getMe(@AuthUser('sub') userId: string) {
     return this.authService.getMe(userId);
   }
 
