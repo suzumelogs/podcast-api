@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -179,7 +180,7 @@ export class AuthService {
     await this.usersService.update(userId, { password: hashedNewPassword });
 
     return {
-      statusCode: 200,
+      statusCode: HttpStatus.OK,
       message: 'Password changed successfully',
     };
   }
@@ -202,7 +203,7 @@ export class AuthService {
     await this.mailService.sendResetPasswordEmail(user.email, resetToken);
 
     return {
-      statusCode: 200,
+      statusCode: HttpStatus.OK,
       message: 'Reset password email sent successfully',
     };
   }
@@ -224,7 +225,7 @@ export class AuthService {
     });
 
     return {
-      statusCode: 200,
+      statusCode: HttpStatus.OK,
       message: 'Password reset successfully',
     };
   }
