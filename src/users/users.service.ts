@@ -7,6 +7,7 @@ import { User, UserDocument } from '../_schemas/user.schema';
 import { CollectionDto } from 'src/_dtos/input.dto';
 import { CollectionResponse } from 'src/_dtos/output.dto';
 import { DocumentCollector } from 'src/common/executor/collector';
+import { UpdateProfileDto } from 'src/_dtos/update_profile.dto';
 
 @Injectable()
 export class UsersService {
@@ -98,6 +99,45 @@ export class UsersService {
       }
 
       return deletedUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateProfile(
+    userId: string,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<{ statusCode: number; message: string; data: User }> {
+    try {
+      const updatedUser = await this.userModel
+        .findByIdAndUpdate(
+          userId,
+          {
+            $set: {
+              name: updateProfileDto.name,
+              dateOfBirth: updateProfileDto.dateOfBirth,
+              gender: updateProfileDto.gender,
+              address: updateProfileDto.address,
+              phoneNumber: updateProfileDto.phoneNumber,
+            },
+          },
+          {
+            new: true,
+            runValidators: true,
+          },
+        )
+        .lean()
+        .exec();
+
+      if (!updatedUser) {
+        throw new NotFoundException(`User with id ${userId} not found`);
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Profile updated successfully',
+        data: updatedUser,
+      };
     } catch (error) {
       throw error;
     }

@@ -3,30 +3,36 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @ApiProperty({
-    description: 'Tên của người dùng',
+    description: 'The full name of the user',
     example: 'John Doe',
   })
   @IsString()
   name: string;
 
   @ApiProperty({
-    description: 'Email của người dùng',
+    description: 'The email address of the user',
     example: 'john.doe@example.com',
   })
   @IsString()
   email: string;
 
   @ApiProperty({
-    description: 'Mật khẩu của người dùng',
+    description: 'The password for the user’s account',
     example: 'securePassword123',
   })
   @IsString()
   password: string;
 
+  @ApiPropertyOptional({
+    description:
+      'An optional refresh token for the user, used to obtain new access tokens without requiring the user to reauthenticate.',
+    example:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+  })
   refreshToken?: string;
 
   @ApiPropertyOptional({
-    description: 'Ngày sinh của người dùng (nếu có)',
+    description: 'The date of birth of the user, if available',
     example: '1990-01-01',
   })
   @IsOptional()
@@ -34,7 +40,7 @@ export class CreateUserDto {
   dateOfBirth?: string;
 
   @ApiPropertyOptional({
-    description: 'Giới tính của người dùng (nếu có)',
+    description: 'The gender of the user, if specified',
     example: 'male',
   })
   @IsOptional()
@@ -42,7 +48,7 @@ export class CreateUserDto {
   gender?: string;
 
   @ApiPropertyOptional({
-    description: 'Địa chỉ của người dùng (nếu có)',
+    description: 'The address of the user, if provided',
     example: '123 Main St',
   })
   @IsOptional()
@@ -50,7 +56,7 @@ export class CreateUserDto {
   address?: string;
 
   @ApiPropertyOptional({
-    description: 'Số điện thoại của người dùng (nếu có)',
+    description: 'The phone number of the user, if provided',
     example: '+123456789',
   })
   @IsOptional()

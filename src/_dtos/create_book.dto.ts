@@ -3,7 +3,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateBookDto {
   @ApiProperty({
-    description: 'Tên của cuốn sách',
+    description: 'The title of the book',
     example: 'The Great Gatsby',
   })
   @IsString()
@@ -11,7 +11,7 @@ export class CreateBookDto {
   name: string;
 
   @ApiProperty({
-    description: 'Mô tả của cuốn sách',
+    description: 'A brief description or summary of the book',
     example: 'A novel set in the 1920s about the mysterious Jay Gatsby.',
   })
   @IsString()
@@ -19,7 +19,8 @@ export class CreateBookDto {
   description: string;
 
   @ApiPropertyOptional({
-    description: 'URL liên kết đến cuốn sách (nếu có)',
+    description:
+      'An optional URL that links to more information about the book, such as a purchase page or additional resources',
     example: 'http://example.com/book-url',
   })
   url?: string;

@@ -3,14 +3,14 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AuthDto {
   @ApiProperty({
-    description: 'Email của người dùng',
+    description: 'The email address of the user',
     example: 'admin@gmail.com',
   })
   @IsString()
   email: string;
 
   @ApiProperty({
-    description: 'Mật khẩu của người dùng',
+    description: 'The password associated with the user account',
     example: 'admin@123',
   })
   @IsString()

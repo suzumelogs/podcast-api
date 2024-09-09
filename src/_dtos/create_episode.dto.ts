@@ -3,7 +3,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateEpisodeDto {
   @ApiProperty({
-    description: 'Tiêu đề của tập',
+    description: 'The title of the episode',
     example: 'Episode 1: The Beginning',
   })
   @IsString()
@@ -11,7 +11,7 @@ export class CreateEpisodeDto {
   title: string;
 
   @ApiProperty({
-    description: 'Tên album của tập',
+    description: 'The name of the album to which this episode belongs',
     example: 'The Great Journey',
   })
   @IsString()
@@ -19,7 +19,7 @@ export class CreateEpisodeDto {
   album: string;
 
   @ApiProperty({
-    description: 'Tên nghệ sĩ của tập',
+    description: 'The name of the artist responsible for this episode',
     example: 'John Doe',
   })
   @IsString()
@@ -27,21 +27,23 @@ export class CreateEpisodeDto {
   artist: string;
 
   @ApiPropertyOptional({
-    description: 'artwork của tập (nếu có)',
+    description:
+      'An optional URL pointing to the artwork associated with this episode, such as a cover image',
     example: 'http://example.com/artwork.jpg',
   })
   artwork?: string;
 
   @ApiProperty({
-    description: 'URL url của tập',
+    description:
+      'The URL where the episode can be accessed or streamed, such as a link to an audio file or a streaming service',
     example: 'http://example.com/url.mp3',
   })
   @IsString()
-  @IsNotEmpty({ message: 'url URL must not be empty' })
+  @IsNotEmpty({ message: 'URL must not be empty' })
   url: string;
 
   @ApiProperty({
-    description: 'Mô tả của tập',
+    description: 'A brief description of the episode',
     example: 'This episode covers the beginning of the journey.',
   })
   @IsString()
@@ -49,7 +51,8 @@ export class CreateEpisodeDto {
   description: string;
 
   @ApiProperty({
-    description: 'ID của chương chứa tập này',
+    description:
+      'The unique MongoDB ID of the chapter to which this episode belongs',
     example: '60d0fe4f5311236168a109ca',
   })
   @IsMongoId({ message: 'Invalid Chapter ID' })

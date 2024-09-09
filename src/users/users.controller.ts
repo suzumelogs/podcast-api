@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AccessTokenGuard } from '../common/gaurds/gaurd.access_token';
@@ -17,6 +16,8 @@ import { User } from '../_schemas/user.schema';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CollectionDto } from 'src/_dtos/input.dto';
+import { UpdateProfileDto } from 'src/_dtos/update_profile.dto';
+import { AuthUser } from 'src/common/decorator/decorator.auth_user';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
@@ -50,21 +51,27 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 
+  @Patch('update-profile')
+  updateProfile(
+    @AuthUser('sub') userId: string,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ) {
+    return this.usersService.updateProfile(userId, updateProfileDto);
+  }
+
   @Patch('favorite/episode/:episodeId')
   markAsFavorite(
-    @Req() req: any,
+    @AuthUser('sub') userId: string,
     @Param('episodeId') episodeId: string,
   ): Promise<{ statusCode: number; message: string }> {
-    const userId = req.user.sub;
     return this.usersService.markAsFavorite(userId, episodeId);
   }
 
   @Patch('unmark-favorite/episode/:episodeId')
   async unmarkAsFavorite(
-    @Req() req: any,
+    @AuthUser('sub') userId: string,
     @Param('episodeId') episodeId: string,
   ): Promise<{ statusCode: number; message: string }> {
-    const userId = req.user.sub;
     return this.usersService.unmarkAsFavorite(userId, episodeId);
   }
 }
