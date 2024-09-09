@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateChapterDto } from 'src/_dtos/create_chapter.dto';
 import { UpdateChapterDto } from 'src/_dtos/update_chapter.dto';
+import { Book, BookDocument } from 'src/_schemas/book.schema';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { CollectionDto } from '../_dtos/input.dto';
 import { CollectionResponse } from '../_dtos/output.dto';
@@ -14,6 +15,8 @@ export class ChaptersService {
   constructor(
     @InjectModel(Chapter.name)
     private readonly chapterModel: Model<ChapterDocument>,
+    @InjectModel(Book.name)
+    private readonly bookModel: Model<BookDocument>,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
@@ -155,20 +158,49 @@ export class ChaptersService {
     }
   }
 
-  async findByBookId(
-    bookId: string,
-  ): Promise<{ statusCode: number; data: Chapter[] }> {
+  // async findByBookId(
+  //   bookId: string,
+  // ): Promise<{ statusCode: number; data: Chapter[] }> {
+  //   try {
+  //     const chapters = await this.chapterModel
+  //       .find({ bookId })
+  //       .sort({ createdAt: -1 })
+  //       .populate('bookId')
+  //       .lean()
+  //       .exec();
+
+  //     return {
+  //       statusCode: HttpStatus.OK,
+  //       data: chapters.length ? chapters : [],
+  //     };
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  async findByBookId(bookId: string): Promise<{
+    statusCode: number;
+    data: { book: Book; chapters: Chapter[] };
+  }> {
     try {
+      const book = await this.bookModel.findById(bookId).lean().exec();
+
+      if (!book) {
+        throw new NotFoundException(`Book with id ${bookId} not found`);
+      }
+
       const chapters = await this.chapterModel
         .find({ bookId })
         .sort({ createdAt: -1 })
-        .populate('bookId')
         .lean()
         .exec();
 
       return {
         statusCode: HttpStatus.OK,
-        data: chapters.length ? chapters : [],
+        data: {
+          book,
+          chapters,
+        },
       };
     } catch (error) {
       throw error;
