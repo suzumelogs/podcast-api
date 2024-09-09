@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -30,6 +31,12 @@ export class EpisodesController {
   @Get()
   async findAll(@Query() query: CollectionDto): Promise<{ data: Episode[] }> {
     return this.episodesService.findAll(query);
+  }
+
+  @Get('by-me')
+  async findAllByMe(@Query() collectionDto: CollectionDto, @Req() req: any) {
+    const userId = req.user.sub;
+    return this.episodesService.findAllByMe(collectionDto, userId);
   }
 
   @Get(':id')

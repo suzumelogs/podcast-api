@@ -3,13 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
 import { CollectionDto } from 'src/_dtos/input.dto';
-import { CollectionResponse } from 'src/_dtos/output.dto';
+import { CollectionResponse, EpisodeWithFavorite } from 'src/_dtos/output.dto';
 import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { DocumentCollector } from 'src/common/executor/collector';
 import { Episode, EpisodeDocument } from '../_schemas/episode.schema';
 import { AssemblyAI } from 'assemblyai';
 import { ConfigService } from '@nestjs/config';
+import { User, UserDocument } from 'src/_schemas/user.schema';
 
 @Injectable()
 export class EpisodesService {
@@ -18,6 +19,8 @@ export class EpisodesService {
   constructor(
     @InjectModel(Episode.name)
     private readonly episodeModel: Model<EpisodeDocument>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
     private readonly cloudinaryService: CloudinaryService,
     private readonly configService: ConfigService,
   ) {
@@ -34,6 +37,42 @@ export class EpisodesService {
         this.episodeModel,
       );
       return collector.find(collectionDto);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findAllByMe(
+    collectionDto: CollectionDto,
+    userId: string,
+  ): Promise<CollectionResponse<EpisodeWithFavorite>> {
+    try {
+      const collector = new DocumentCollector<EpisodeDocument>(
+        this.episodeModel,
+      );
+      const episodes = await collector.find(collectionDto);
+
+      const userFavorites = await this.userModel
+        .findById(userId)
+        .select('favorites')
+        .lean()
+        .exec();
+
+      const favoriteEpisodes = userFavorites?.favorites || [];
+
+      const episodesWithFavoriteStatus: EpisodeWithFavorite[] =
+        episodes.data.map((episode) => {
+          const plainEpisode = episode.toObject();
+          return {
+            ...plainEpisode,
+            isFavorite: favoriteEpisodes.includes(plainEpisode._id),
+          };
+        });
+
+      return {
+        ...episodes,
+        data: episodesWithFavoriteStatus,
+      };
     } catch (error) {
       throw error;
     }
