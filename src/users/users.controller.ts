@@ -18,8 +18,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CollectionDto } from 'src/_dtos/input.dto';
 import { UpdateProfileDto } from 'src/_dtos/update_profile.dto';
 import { AuthUser } from 'src/common/decorator/decorator.auth_user';
-import { RolesGuard } from 'src/common/gaurds/roles.guard';
 import { Roles } from 'src/common/decorator/roles.decorator';
+import { RolesGuard } from 'src/common/gaurds/guard.roles';
 
 @ApiTags('Users')
 @ApiBearerAuth('JWT-auth')
