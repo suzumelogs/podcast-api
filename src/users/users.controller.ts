@@ -59,7 +59,7 @@ export class UsersController {
     return this.usersService.markAsFavorite(userId, episodeId);
   }
 
-  @Patch('unmark-f/episodeavorite/:episodeId')
+  @Patch('unmark-favorite/episode/:episodeId')
   async unmarkAsFavorite(
     @Req() req: any,
     @Param('episodeId') episodeId: string,
