@@ -13,16 +13,12 @@ export class MailService {
   private createTransporter(): nodemailer.Transporter {
     const host = this.configService.get<string>('MAIL_HOST');
     const port = this.configService.get<number>('MAIL_PORT');
-    const secure = this.configService.get<boolean>('MAIL_SECURE');
     const user = this.configService.get<string>('MAIL_USER');
     const pass = this.configService.get<string>('MAIL_PASS');
-
-    console.log(host, port, secure, user, pass);
 
     return nodemailer.createTransport({
       host,
       port,
-      secure,
       auth: {
         user,
         pass,
@@ -38,7 +34,7 @@ export class MailService {
       from: this.configService.get<string>('MAIL_FROM'),
       to: email,
       subject: 'Password Reset Request',
-      text: `Your password reset code is ${resetToken}. It is valid for 10 minutes.`,
+      text: `Your password reset code is ${resetToken}. It is valid for 5 minutes.`,
     };
 
     await this.transporter.sendMail(mailOptions);

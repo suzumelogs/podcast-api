@@ -43,6 +43,8 @@ export class User {
 
   @Prop({ type: String, nullable: true })
   resetToken?: string;
+  @Prop({ type: Date, nullable: true })
+  resetTokenExpiration?: Date;
 
   @Exclude()
   @Prop()

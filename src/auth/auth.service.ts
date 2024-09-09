@@ -49,7 +49,7 @@ export class AuthService {
   async signIn(data: AuthDto): Promise<SigninResponse> {
     const user = await this.usersService.findByEmail(data.email);
     if (!user) throw new BadRequestException('User does not exist');
-    const passwordMatches = argon2.verify(user.password, data.password);
+    const passwordMatches = await argon2.verify(user.password, data.password);
     if (!passwordMatches)
       throw new BadRequestException('Password is incorrect');
     const tokens = await this.getTokens(String(user._id), user.email);
@@ -150,6 +150,11 @@ export class AuthService {
         name: user.name,
         email: user.email,
         roles: user.roles,
+        dateOfBirth: user.dateOfBirth,
+        gender: user.gender,
+        address: user.address,
+        phoneNumber: user.phoneNumber,
+        favorites: user.favorites,
       },
     };
   }
@@ -186,7 +191,13 @@ export class AuthService {
     if (!user) throw new NotFoundException('User does not exist');
 
     const resetToken = this.generateResetToken();
-    await this.usersService.update(user._id.toString(), { resetToken });
+    const expiration = new Date();
+    expiration.setMinutes(expiration.getMinutes() + 5);
+
+    await this.usersService.update(user._id.toString(), {
+      resetToken,
+      resetTokenExpiration: expiration,
+    });
 
     await this.mailService.sendResetPasswordEmail(user.email, resetToken);
 
