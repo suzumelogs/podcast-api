@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Query,
-  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -20,6 +19,7 @@ import { Episode } from 'src/_schemas/episode.schema';
 import { EpisodesService } from './episodes.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
+import { AuthUser } from 'src/common/decorator/decorator.auth_user';
 
 @ApiTags('Episodes')
 @ApiBearerAuth('JWT-auth')
@@ -34,8 +34,10 @@ export class EpisodesController {
   }
 
   @Get('by-me')
-  async findAllByMe(@Query() collectionDto: CollectionDto, @Req() req: any) {
-    const userId = req.user.sub;
+  async findAllByMe(
+    @Query() collectionDto: CollectionDto,
+    @AuthUser('sub') userId: string,
+  ) {
     return this.episodesService.findAllByMe(collectionDto, userId);
   }
 
