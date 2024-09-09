@@ -15,6 +15,8 @@ import { CreateUserDto } from '../_dtos/create_user.dto';
 import { AuthService } from './auth.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ChangePasswordDto } from 'src/_dtos/change_password.dto';
+import { ForgotPasswordDto } from 'src/_dtos/forgot-password.dto';
+import { ResetPasswordDto } from 'src/_dtos/reset-password.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -67,5 +69,15 @@ export class AuthController {
       changePasswordDto.currentPassword,
       changePasswordDto.newPassword,
     );
+  }
+
+  @Post('forgot-password')
+  forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto);
+  }
+
+  @Post('reset-password')
+  resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
   }
 }

@@ -12,6 +12,9 @@ import { AuthDto } from '../_dtos/auth.dto';
 import { CreateUserDto } from '../_dtos/create_user.dto';
 import { SigninResponse, SignupResponse } from '../_types/res.login.interface';
 import { Tokens } from '../_types/tokens.type';
+import { MailService } from 'src/mail/mail.service';
+import { ResetPasswordDto } from 'src/_dtos/reset-password.dto';
+import { ForgotPasswordDto } from 'src/_dtos/forgot-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +22,7 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private mailService: MailService,
   ) {}
   async signUp(createUserDto: CreateUserDto): Promise<SignupResponse> {
     const userExists = await this.usersService.findByEmail(createUserDto.email);
@@ -63,7 +67,11 @@ export class AuthService {
   }
 
   async logout(userId: string) {
-    return this.usersService.update(userId, { refreshToken: null });
+    await this.usersService.update(userId, { refreshToken: null });
+    return {
+      statusCode: 200,
+      message: 'Logged out successfully',
+    };
   }
 
   async hashData(data: string) {
@@ -150,7 +158,7 @@ export class AuthService {
     userId: string,
     currentPassword: string,
     newPassword: string,
-  ): Promise<void> {
+  ): Promise<{ statusCode: number; message: string }> {
     const user = await this.usersService.findById(userId);
     if (!user) {
       throw new NotFoundException('User not found');
@@ -164,5 +172,53 @@ export class AuthService {
     const hashedNewPassword = await this.hashData(newPassword);
 
     await this.usersService.update(userId, { password: hashedNewPassword });
+
+    return {
+      statusCode: 200,
+      message: 'Password changed successfully',
+    };
+  }
+
+  async forgotPassword(
+    forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<{ statusCode: number; message: string }> {
+    const user = await this.usersService.findByEmail(forgotPasswordDto.email);
+    if (!user) throw new NotFoundException('User does not exist');
+
+    const resetToken = this.generateResetToken();
+    await this.usersService.update(user._id.toString(), { resetToken });
+
+    await this.mailService.sendResetPasswordEmail(user.email, resetToken);
+
+    return {
+      statusCode: 200,
+      message: 'Reset password email sent successfully',
+    };
+  }
+
+  async resetPassword(
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<{ statusCode: number; message: string }> {
+    const user = await this.usersService.findByEmail(resetPasswordDto.email);
+    if (!user) throw new NotFoundException('User does not exist');
+
+    if (user.resetToken !== resetPasswordDto.token) {
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+
+    const hashedPassword = await this.hashData(resetPasswordDto.newPassword);
+    await this.usersService.update(user._id.toString(), {
+      password: hashedPassword,
+      resetToken: null,
+    });
+
+    return {
+      statusCode: 200,
+      message: 'Password reset successfully',
+    };
+  }
+
+  private generateResetToken(): string {
+    return Math.floor(10000 + Math.random() * 90000).toString();
   }
 }

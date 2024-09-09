@@ -11,7 +11,8 @@ export class ChangePasswordDto {
   currentPassword: string;
 
   @ApiProperty({
-    description: 'The new password for the user. Must be between 6 and 20 characters long.',
+    description:
+      'The new password for the user. Must be between 6 and 20 characters long.',
     example: 'new_password456',
   })
   @IsNotEmpty()

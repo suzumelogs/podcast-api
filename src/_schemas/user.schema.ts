@@ -41,6 +41,9 @@ export class User {
   @Prop({ type: String, nullable: true })
   phoneNumber: string | null;
 
+  @Prop({ type: String, nullable: true })
+  resetToken?: string;
+
   @Exclude()
   @Prop()
   refreshToken: string;
