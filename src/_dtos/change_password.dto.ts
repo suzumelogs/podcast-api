@@ -3,20 +3,21 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ChangePasswordDto {
   @ApiProperty({
-    description: 'The current password of the user.',
+    description: 'Current password of the user.',
     example: 'current_password123',
   })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'Current password is required' })
+  @IsString({ message: 'Current password must be a string' })
   currentPassword: string;
 
   @ApiProperty({
-    description:
-      'The new password for the user. Must be between 6 and 20 characters long.',
+    description: 'New password for the user (6-20 characters).',
     example: 'new_password456',
   })
-  @IsNotEmpty()
-  @IsString()
-  @Length(6, 20)
+  @IsNotEmpty({ message: 'New password is required' })
+  @IsString({ message: 'New password must be a string' })
+  @Length(6, 20, {
+    message: 'New password must be between 6 and 20 characters',
+  })
   newPassword: string;
 }

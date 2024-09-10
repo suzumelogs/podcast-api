@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class ResetPasswordDto {
   @ApiProperty({
-    description: 'The email address of the user whose password is being reset',
+    description: 'User email for password reset',
     example: 'user@example.com',
   })
   @IsEmail({}, { message: 'Invalid email address' })
@@ -11,7 +11,7 @@ export class ResetPasswordDto {
   email: string;
 
   @ApiProperty({
-    description: 'The reset token sent to the user for password reset',
+    description: 'Password reset token',
     example: '12345',
   })
   @IsString({ message: 'Reset token must be a string' })
@@ -19,11 +19,11 @@ export class ResetPasswordDto {
   token: string;
 
   @ApiProperty({
-    description: 'The new password to set for the user',
+    description: 'New password for the user',
     example: 'NewPassword123!',
   })
   @IsString({ message: 'New password must be a string' })
   @IsNotEmpty({ message: 'New password is required' })
-  @MinLength(6, { message: 'New password must be at least 6 characters long' })
+  @MinLength(6, { message: 'Password must be at least 6 characters' })
   newPassword: string;
 }

@@ -1,58 +1,65 @@
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsMongoId,
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsUrl,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateEpisodeDto {
   @ApiProperty({
-    description: 'The title of the episode',
+    description: 'Title of the episode',
     example: 'Episode 1: The Beginning',
   })
-  @IsString()
+  @IsString({ message: 'Title must be a string' })
   @IsNotEmpty({ message: 'Title must not be empty' })
   title: string;
 
   @ApiProperty({
-    description: 'The name of the album to which this episode belongs',
+    description: 'Name of the album to which this episode belongs',
     example: 'The Great Journey',
   })
-  @IsString()
+  @IsString({ message: 'Album must be a string' })
   @IsNotEmpty({ message: 'Album must not be empty' })
   album: string;
 
   @ApiProperty({
-    description: 'The name of the artist responsible for this episode',
+    description: 'Name of the artist responsible for this episode',
     example: 'John Doe',
   })
-  @IsString()
+  @IsString({ message: 'Artist must be a string' })
   @IsNotEmpty({ message: 'Artist must not be empty' })
   artist: string;
 
   @ApiPropertyOptional({
-    description:
-      'An optional URL pointing to the artwork associated with this episode, such as a cover image',
+    description: 'Optional URL to the artwork associated with this episode',
     example: 'http://example.com/artwork.jpg',
   })
+  @IsOptional()
+  @IsUrl({}, { message: 'Artwork URL must be a valid URL' })
   artwork?: string;
 
   @ApiProperty({
-    description:
-      'The URL where the episode can be accessed or streamed, such as a link to an audio file or a streaming service',
+    description: 'URL where the episode can be accessed or streamed',
     example: 'http://example.com/url.mp3',
   })
-  @IsString()
-  @IsNotEmpty({ message: 'URL must not be empty' })
-  url: string;
+  @IsString({ message: 'URL must be a string' })
+  @IsOptional()
+  @IsUrl({}, { message: 'URL must be a valid URL' })
+  url?: string;
 
   @ApiProperty({
-    description: 'A brief description of the episode',
+    description: 'Brief description of the episode',
     example: 'This episode covers the beginning of the journey.',
   })
-  @IsString()
+  @IsString({ message: 'Description must be a string' })
   @IsNotEmpty({ message: 'Description must not be empty' })
   description: string;
 
   @ApiProperty({
     description:
-      'The unique MongoDB ID of the chapter to which this episode belongs',
+      'Unique MongoDB ID of the chapter to which this episode belongs',
     example: '60d0fe4f5311236168a109ca',
   })
   @IsMongoId({ message: 'Invalid Chapter ID' })
