@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
 import { CollectionDto } from 'src/_dtos/input.dto';
 import { CollectionResponse, EpisodeWithFavorite } from 'src/_dtos/output.dto';
@@ -69,9 +69,13 @@ export class EpisodesService {
       const episodesWithFavoriteStatus: EpisodeWithFavorite[] =
         episodes.data.map((episode) => {
           const plainEpisode = episode.toObject();
+
           return {
             ...plainEpisode,
-            isFavorite: favoriteEpisodes.includes(plainEpisode._id),
+            isFavorite: favoriteEpisodes.some(
+              (favId: mongoose.Types.ObjectId) =>
+                favId.equals(plainEpisode._id),
+            ),
           };
         });
 
@@ -126,7 +130,9 @@ export class EpisodesService {
 
       const favoriteEpisodes = userFavorites?.favorites || [];
 
-      const isFavorite = favoriteEpisodes.includes(episode._id);
+      const isFavorite = favoriteEpisodes.some(
+        (favId: mongoose.Types.ObjectId) => favId.equals(episode._id),
+      );
 
       return {
         statusCode: HttpStatus.OK,
