@@ -98,6 +98,48 @@ export class EpisodesService {
     }
   }
 
+  async findByIdOfMe(
+    id: string,
+    userId: string,
+  ): Promise<{ statusCode: number; data: Episode & { isFavorite: boolean } }> {
+    try {
+      const episode = await this.episodeModel
+        .findById(id)
+        .populate({
+          path: 'chapterId',
+          populate: {
+            path: 'bookId',
+          },
+        })
+        .lean()
+        .exec();
+
+      if (!episode) {
+        throw new NotFoundException(`Episode with id ${id} not found`);
+      }
+
+      const userFavorites = await this.userModel
+        .findById(userId)
+        .select('favorites')
+        .lean()
+        .exec();
+
+      const favoriteEpisodes = userFavorites?.favorites || [];
+
+      const isFavorite = favoriteEpisodes.includes(episode._id);
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: {
+          ...episode,
+          isFavorite,
+        },
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async create(
     createEpisodeDto: CreateEpisodeDto,
     file?: Express.Multer.File,
@@ -231,12 +273,12 @@ export class EpisodesService {
   //     const episodes = await this.episodeModel
   //       .find({ chapterId })
   //       .sort({ createdAt: -1 })
-  //       .populate({
-  //         path: 'chapterId',
-  //         populate: {
-  //           path: 'bookId',
-  //         },
-  //       })
+  // .populate({
+  //   path: 'chapterId',
+  //   populate: {
+  //     path: 'bookId',
+  //   },
+  // })
   //       .lean()
   //       .exec();
 

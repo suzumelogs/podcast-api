@@ -46,6 +46,11 @@ export class EpisodesController {
     return this.episodesService.findById(id);
   }
 
+  @Get(':id/by-me')
+  findByIdOfMe(@Param('id') id: string, @AuthUser('sub') userId: string) {
+    return this.episodesService.findByIdOfMe(id, userId);
+  }
+
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   create(
