@@ -194,4 +194,23 @@ export class UsersService {
       throw error;
     }
   }
+
+  async findEpisodesFavoriteByMe(id: string): Promise<UserDocument> {
+    try {
+      const episodesByMe = await this.userModel
+        .findById(id)
+        .populate('favorites')
+        .select('favorites')
+        .lean()
+        .exec();
+
+      if (!episodesByMe) {
+        throw new NotFoundException(`Episodes by me with id ${id} not found`);
+      }
+
+      return episodesByMe;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -77,4 +77,9 @@ export class UsersController {
   ): Promise<{ statusCode: number; message: string }> {
     return this.usersService.unmarkAsFavorite(userId, episodeId);
   }
+
+  @Get('episodes/by-me')
+  findEpisodesFavoriteByMe(@AuthUser('sub') userId: string) {
+    return this.usersService.findEpisodesFavoriteByMe(userId);
+  }
 }
