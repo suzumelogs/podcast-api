@@ -199,7 +199,14 @@ export class UsersService {
     try {
       const episodesByMe = await this.userModel
         .findById(id)
-        .populate('favorites')
+        .populate({
+          path: 'favorites',
+          populate: {
+            path: 'chapterId',
+            select: '_id',
+            populate: { path: 'bookId', select: 'author' },
+          },
+        })
         .select('favorites')
         .lean()
         .exec();
