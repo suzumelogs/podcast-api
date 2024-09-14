@@ -54,7 +54,7 @@ export class UsersController {
     return this.usersService.remove(id);
   }
 
-  @Patch('update-profile')
+  @Patch('update-profile/by-me')
   updateProfile(
     @AuthUser('sub') userId: string,
     @Body() updateProfileDto: UpdateProfileDto,
