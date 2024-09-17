@@ -455,7 +455,6 @@ export class EpisodesService {
 
   async updateIsTop(
     id: string,
-    isTop: boolean,
   ): Promise<{ statusCode: number; message: string; data: Episode }> {
     try {
       const episode = await this.episodeModel.findById(id).exec();
@@ -464,12 +463,12 @@ export class EpisodesService {
         throw new NotFoundException(`Episode with id ${id} not found`);
       }
 
-      episode.isTop = isTop;
+      episode.isTop = !episode.isTop;
       await episode.save();
 
       return {
         statusCode: HttpStatus.OK,
-        message: `Episode ${id} is ${isTop ? 'marked as top' : 'unmarked as top'}`,
+        message: `Episode is now ${episode.isTop ? 'marked as top' : 'unmarked as top'}`,
         data: episode,
       };
     } catch (error) {

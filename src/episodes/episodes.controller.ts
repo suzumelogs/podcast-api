@@ -119,8 +119,8 @@ export class EpisodesController {
     return this.episodesService.transcribeAudioUrl(id);
   }
 
-  @Patch(':id/update/is-top')
-  async updateIsTop(@Param('id') id: string, @Body('isTop') isTop: boolean) {
-    return this.episodesService.updateIsTop(id, isTop);
+  @Patch(':id/update/set-top')
+  async updateIsTop(@Param('id') id: string) {
+    return this.episodesService.updateIsTop(id);
   }
 }
