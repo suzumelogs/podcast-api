@@ -119,7 +119,7 @@ export class EpisodesController {
     return this.episodesService.transcribeAudioUrl(id);
   }
 
-  @Patch(':id/update/set-top')
+  @Patch(':id/update/is-top')
   async updateIsTop(@Param('id') id: string) {
     return this.episodesService.updateIsTop(id);
   }
