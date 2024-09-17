@@ -452,4 +452,28 @@ export class EpisodesService {
   private delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
+
+  async updateIsTop(
+    id: string,
+    isTop: boolean,
+  ): Promise<{ statusCode: number; message: string; data: Episode }> {
+    try {
+      const episode = await this.episodeModel.findById(id).exec();
+
+      if (!episode) {
+        throw new NotFoundException(`Episode with id ${id} not found`);
+      }
+
+      episode.isTop = isTop;
+      await episode.save();
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: `Episode ${id} is ${isTop ? 'marked as top' : 'unmarked as top'}`,
+        data: episode,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }
