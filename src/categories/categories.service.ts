@@ -5,6 +5,7 @@ import { CreateCategoryDto } from 'src/_dtos/create_category.dto';
 import { CollectionDto } from 'src/_dtos/input.dto';
 import { CollectionResponse } from 'src/_dtos/output.dto';
 import { UpdateCategoryDto } from 'src/_dtos/update_category.dto';
+import { Book, BookDocument } from 'src/_schemas/book.schema';
 import { Category, CategoryDocument } from 'src/_schemas/category.schema';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { DocumentCollector } from 'src/common/executor/collector';
@@ -14,6 +15,8 @@ export class CategoriesService {
   constructor(
     @InjectModel(Category.name)
     private readonly categoryModel: Model<CategoryDocument>,
+    @InjectModel(Book.name)
+    private readonly bookModel: Model<BookDocument>,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
@@ -38,7 +41,14 @@ export class CategoriesService {
         throw new NotFoundException(`Category with id ${id} not found`);
       }
 
-      return { statusCode: HttpStatus.OK, data: category };
+      const books = await this.bookModel.find({ categoryId: id }).lean().exec();
+
+      const result = {
+        ...category,
+        books,
+      };
+
+      return { statusCode: HttpStatus.OK, data: result };
     } catch (error) {
       throw error;
     }
@@ -150,6 +160,21 @@ export class CategoriesService {
         label: book.name,
         value: book._id.toString(),
       }));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findAllNoPagination(): Promise<{
+    statusCode: number;
+    data: Category[];
+  }> {
+    try {
+      const episodesTop = await this.categoryModel.find().lean();
+      return {
+        statusCode: HttpStatus.OK,
+        data: episodesTop,
+      };
     } catch (error) {
       throw error;
     }
