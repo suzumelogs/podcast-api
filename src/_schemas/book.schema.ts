@@ -27,6 +27,13 @@ export class Book {
   @Prop({ default: true })
   isPremium: boolean;
 
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: true,
+  })
+  categoryId: mongoose.Types.ObjectId;
+
   constructor(partial: Partial<Book>) {
     partial.id = partial._id.toString();
     Object.assign(this, partial);
