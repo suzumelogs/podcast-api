@@ -66,4 +66,9 @@ export class CategoriesController {
     const valueLabels = await this.categoriesService.getCategoryValueLabels();
     return valueLabels;
   }
+
+  @Get('all/no-pagination')
+  async findAllNoPagination(): Promise<{ data: Category[] }> {
+    return this.categoriesService.findAllNoPagination();
+  }
 }
