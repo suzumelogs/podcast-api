@@ -8,6 +8,7 @@ import { BooksModule } from './books/books.module';
 import { ChaptersModule } from './chapters/chapters.module';
 import { EpisodesModule } from './episodes/episodes.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     ChaptersModule,
     EpisodesModule,
     CloudinaryModule,
+    CategoriesModule,
   ],
 })
 export class AppModule {}

@@ -53,6 +53,15 @@ export class CloudinaryService {
    * @param file The image file to be uploaded.
    * @returns A promise that resolves with the Cloudinary response.
    */
+  uploadImageCategory(file: Express.Multer.File): Promise<CloudinaryResponse> {
+    return this.uploadFile(file, 'podcast/category');
+  }
+
+  /**
+   * Uploads an image for a book to Cloudinary.
+   * @param file The image file to be uploaded.
+   * @returns A promise that resolves with the Cloudinary response.
+   */
   uploadImageBook(file: Express.Multer.File): Promise<CloudinaryResponse> {
     return this.uploadFile(file, 'podcast/book');
   }

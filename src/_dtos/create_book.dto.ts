@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString, IsOptional, IsUrl } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsUrl,
+  IsMongoId,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateBookDto {
@@ -33,4 +39,12 @@ export class CreateBookDto {
   @IsOptional()
   @IsUrl({}, { message: 'URL must be a valid URL' })
   url?: string;
+
+  @ApiProperty({
+    description: 'Unique MongoDB ID of the book to which this chapter belongs',
+    example: '60d0fe4f5311236168a109ca',
+  })
+  @IsMongoId({ message: 'Invalid Category ID' })
+  @IsNotEmpty({ message: 'Category ID must not be empty' })
+  categoryId: string;
 }

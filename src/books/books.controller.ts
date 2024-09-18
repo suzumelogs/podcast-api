@@ -66,4 +66,14 @@ export class BooksController {
     const valueLabels = await this.booksService.getBookValueLabels();
     return valueLabels;
   }
+
+  @Patch(':id/update/is-top-10-year')
+  async updateIsTop10Year(@Param('id') id: string) {
+    return this.booksService.updateIsTop10Year(id);
+  }
+
+  @Get('get/all-top-10-year')
+  async findAllTop10Year(): Promise<{ data: Book[] }> {
+    return this.booksService.findAllTop10Year();
+  }
 }

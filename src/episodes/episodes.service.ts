@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
@@ -463,6 +468,16 @@ export class EpisodesService {
         throw new NotFoundException(`Episode with id ${id} not found`);
       }
 
+      const topEpisodesCount = await this.episodeModel
+        .countDocuments({ isTop: true })
+        .exec();
+
+      if (!episode.isTop && topEpisodesCount >= 10) {
+        throw new BadRequestException(
+          'Cannot mark more than 10 episodes as top',
+        );
+      }
+
       episode.isTop = !episode.isTop;
       await episode.save();
 
@@ -470,6 +485,18 @@ export class EpisodesService {
         statusCode: HttpStatus.OK,
         message: `Episode is now ${episode.isTop ? 'marked as top' : 'unmarked as top'}`,
         data: episode,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findAllTop(): Promise<{ statusCode: number; data: Episode[] }> {
+    try {
+      const episodesTop = await this.episodeModel.find({ isTop: true }).lean();
+      return {
+        statusCode: HttpStatus.OK,
+        data: episodesTop,
       };
     } catch (error) {
       throw error;

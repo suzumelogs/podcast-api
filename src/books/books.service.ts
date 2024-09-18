@@ -1,4 +1,9 @@
-import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateBookDto } from '../_dtos/create_book.dto';
@@ -145,6 +150,51 @@ export class BooksService {
         label: book.name,
         value: book._id.toString(),
       }));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateIsTop10Year(
+    id: string,
+  ): Promise<{ statusCode: number; message: string; data: Book }> {
+    try {
+      const book = await this.bookModel.findById(id).exec();
+
+      if (!book) {
+        throw new NotFoundException(`Book with id ${id} not found`);
+      }
+
+      const topBooks10YearCount = await this.bookModel
+        .countDocuments({ isTop: true })
+        .exec();
+
+      if (!book.isTop10Year && topBooks10YearCount >= 10) {
+        throw new BadRequestException('Cannot mark more than 10 book as top');
+      }
+
+      book.isTop10Year = !book.isTop10Year;
+      await book.save();
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: `Book is now ${book.isTop10Year ? 'marked as top' : 'unmarked as top'}`,
+        data: book,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async findAllTop10Year(): Promise<{ statusCode: number; data: Book[] }> {
+    try {
+      const booksTop10Year = await this.bookModel
+        .find({ isTop10Year: true })
+        .lean();
+      return {
+        statusCode: HttpStatus.OK,
+        data: booksTop10Year,
+      };
     } catch (error) {
       throw error;
     }
