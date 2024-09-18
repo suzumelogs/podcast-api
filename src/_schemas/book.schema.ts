@@ -27,6 +27,9 @@ export class Book {
   @Prop({ default: true })
   isPremium: boolean;
 
+  @Prop({ default: false })
+  isTop10Year: boolean;
+
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',

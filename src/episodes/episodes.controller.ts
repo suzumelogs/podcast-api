@@ -124,7 +124,7 @@ export class EpisodesController {
     return this.episodesService.updateIsTop(id);
   }
 
-  @Get('get/all-top/')
+  @Get('get/all-top')
   async findAllTop(): Promise<{ data: Episode[] }> {
     return this.episodesService.findAllTop();
   }
