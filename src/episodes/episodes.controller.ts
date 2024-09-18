@@ -123,4 +123,9 @@ export class EpisodesController {
   async updateIsTop(@Param('id') id: string) {
     return this.episodesService.updateIsTop(id);
   }
+
+  @Get('get/all-top/')
+  async findAllTop(): Promise<{ data: Episode[] }> {
+    return this.episodesService.findAllTop();
+  }
 }
