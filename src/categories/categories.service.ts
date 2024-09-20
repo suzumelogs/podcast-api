@@ -156,9 +156,9 @@ export class CategoriesService {
   async getCategoryValueLabels(): Promise<{ label: string; value: string }[]> {
     try {
       const categories = await this.categoryModel.find().lean();
-      return categories.map((book) => ({
-        label: book.name,
-        value: book._id.toString(),
+      return categories.map((category) => ({
+        label: category.name,
+        value: category._id.toString(),
       }));
     } catch (error) {
       throw error;
