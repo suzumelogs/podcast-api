@@ -4,6 +4,5 @@ import { IsBoolean, IsOptional } from 'class-validator';
 
 export class UpdateEpisodeDto extends PartialType(CreateEpisodeDto) {
   @IsOptional()
-  @IsBoolean()
   isPremium?: boolean;
 }
