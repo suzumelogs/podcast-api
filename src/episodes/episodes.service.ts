@@ -18,6 +18,8 @@ import { ConfigService } from '@nestjs/config';
 import { User, UserDocument } from 'src/_schemas/user.schema';
 import { Chapter, ChapterDocument } from 'src/_schemas/chapter.schema';
 import { Book, BookDocument } from 'src/_schemas/book.schema';
+import { statSync, createReadStream } from 'fs';
+import { Response } from 'express';
 
 @Injectable()
 export class EpisodesService {
@@ -274,6 +276,36 @@ export class EpisodesService {
       };
     } catch (error) {
       throw error;
+    }
+  }
+
+  async stream(id: string, headers, res: Response) {
+    // Process find videoPath in database
+    const videoPath = 'storage\\audios\\1729493889771-audiosample.mp3';
+    const { size } = statSync(videoPath);
+    const videoRange = headers.range;
+    if (videoRange) {
+      const parts = videoRange.replace(/bytes=/, '').split('-');
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
+      const chunksize = end - start + 1;
+      const readStreamfile = createReadStream(videoPath, {
+        start,
+        end,
+        highWaterMark: 60,
+      });
+      const head = {
+        'Content-Range': `bytes ${start}-${end}/${size}`,
+        'Content-Length': chunksize,
+      };
+      res.writeHead(HttpStatus.PARTIAL_CONTENT, head);
+      readStreamfile.pipe(res);
+    } else {
+      const head = {
+        'Content-Length': size,
+      };
+      res.writeHead(HttpStatus.OK, head); //200
+      createReadStream(videoPath).pipe(res);
     }
   }
 

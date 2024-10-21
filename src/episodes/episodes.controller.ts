@@ -10,6 +10,8 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  Res,
+  Header,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
@@ -20,6 +22,8 @@ import { EpisodesService } from './episodes.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
 import { AuthUser } from 'src/common/decorator/decorator.auth_user';
+import { Headers } from '@nestjs/common';
+import { Response } from 'express';
 
 @ApiTags('Episodes')
 @ApiBearerAuth('JWT-auth')
@@ -31,6 +35,17 @@ export class EpisodesController {
   @Get()
   async findAll(@Query() query: CollectionDto): Promise<{ data: Episode[] }> {
     return this.episodesService.findAll(query);
+  }
+
+  @Get('stream/:id')
+  @Header('Accept-Ranges', 'bytes')
+  @Header('Content-Type', 'video/mp4')
+  async getStreamVideo(
+    @Param('id') id: string,
+    @Headers() headers,
+    @Res() res: Response,
+  ) {
+    return this.episodesService.stream(id, headers, res);
   }
 
   @Get('by-me')
