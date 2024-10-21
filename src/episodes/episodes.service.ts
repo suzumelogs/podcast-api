@@ -155,25 +155,9 @@ export class EpisodesService {
 
   async create(
     createEpisodeDto: CreateEpisodeDto,
-    file?: Express.Multer.File,
-    audioFile?: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Episode }> {
     try {
-      let artwork = createEpisodeDto.artwork;
-      if (file) {
-        const uploadResponseFile =
-          await this.cloudinaryService.uploadImageEpisodes(file);
-        artwork = uploadResponseFile.secure_url;
-      }
-
-      let url = createEpisodeDto.url;
-      if (audioFile) {
-        const uploadResponseAudio =
-          await this.cloudinaryService.uploadAudio(audioFile);
-        url = uploadResponseAudio.secure_url;
-      }
-
-      const episodeData = { ...createEpisodeDto, artwork, url };
+      const episodeData = { ...createEpisodeDto };
       const data = await this.episodeModel.create(episodeData);
 
       return {
@@ -189,8 +173,6 @@ export class EpisodesService {
   async update(
     id: string,
     updateEpisodeDto: UpdateEpisodeDto,
-    file?: Express.Multer.File,
-    audioFile?: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Episode }> {
     try {
       const currentEpisode = await this.episodeModel.findById(id).exec();
@@ -198,38 +180,7 @@ export class EpisodesService {
         throw new NotFoundException(`Episode with id ${id} not found`);
       }
 
-      let artwork = updateEpisodeDto.artwork;
-      if (file) {
-        const uploadResponseFile =
-          await this.cloudinaryService.uploadImageEpisodes(file);
-        artwork = uploadResponseFile.secure_url;
-
-        if (currentEpisode.artwork) {
-          const publicId = this.cloudinaryService.extractPublicId(
-            currentEpisode.artwork,
-          );
-          await this.cloudinaryService.bulkDelete(
-            [publicId],
-            'podcast/episode',
-          );
-        }
-      }
-
-      let url = updateEpisodeDto.url;
-      if (audioFile) {
-        const uploadResponseAudioFile =
-          await this.cloudinaryService.uploadAudio(audioFile);
-        url = uploadResponseAudioFile.secure_url;
-
-        if (currentEpisode.url) {
-          const publicId = this.cloudinaryService.extractPublicId(
-            currentEpisode.url,
-          );
-          await this.cloudinaryService.bulkDelete([publicId], 'podcast/audio');
-        }
-      }
-
-      const updatedData = { ...updateEpisodeDto, artwork, url };
+      const updatedData = { ...updateEpisodeDto };
 
       const data = await this.episodeModel
         .findByIdAndUpdate(id, updatedData, {

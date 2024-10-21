@@ -67,24 +67,14 @@ export class EpisodesController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  create(
-    @Body() createEpisodeDto: CreateEpisodeDto,
-    @UploadedFile() file?: Express.Multer.File,
-    @UploadedFile() audioFile?: Express.Multer.File,
-  ) {
-    return this.episodesService.create(createEpisodeDto, file, audioFile);
+  create(@Body() createEpisodeDto: CreateEpisodeDto) {
+    return this.episodesService.create(createEpisodeDto);
   }
 
   @Patch(':id')
   @UseInterceptors(FileInterceptor('file'))
-  update(
-    @Param('id') id: string,
-    @Body() updateEpisodeDto: UpdateEpisodeDto,
-    @UploadedFile() file?: Express.Multer.File,
-    @UploadedFile() audioFile?: Express.Multer.File,
-  ) {
-    return this.episodesService.update(id, updateEpisodeDto, file, audioFile);
+  update(@Param('id') id: string, @Body() updateEpisodeDto: UpdateEpisodeDto) {
+    return this.episodesService.update(id, updateEpisodeDto);
   }
 
   @Delete(':id')
