@@ -280,16 +280,16 @@ export class EpisodesService {
   }
 
   async stream(id: string, headers, res: Response) {
-    // Process find videoPath in database
-    const videoPath = 'storage\\audios\\1729493889771-audiosample.mp3';
-    const { size } = statSync(videoPath);
+    // Process find path in database
+    const path = 'storage\\audios\\1729493889771-audiosample.mp3';
+    const { size } = statSync(path);
     const videoRange = headers.range;
     if (videoRange) {
       const parts = videoRange.replace(/bytes=/, '').split('-');
       const start = parseInt(parts[0], 10);
       const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
       const chunksize = end - start + 1;
-      const readStreamfile = createReadStream(videoPath, {
+      const readStreamfile = createReadStream(path, {
         start,
         end,
         highWaterMark: 60,
@@ -305,7 +305,7 @@ export class EpisodesService {
         'Content-Length': size,
       };
       res.writeHead(HttpStatus.OK, head); //200
-      createReadStream(videoPath).pipe(res);
+      createReadStream(path).pipe(res);
     }
   }
 
