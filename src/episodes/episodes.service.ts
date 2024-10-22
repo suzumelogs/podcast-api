@@ -210,13 +210,6 @@ export class EpisodesService {
         throw new NotFoundException(`Episode with id ${id} not found`);
       }
 
-      if (episode.artwork) {
-        const publicId = this.cloudinaryService.extractPublicId(
-          episode.artwork,
-        );
-        await this.cloudinaryService.bulkDelete([publicId], 'podcast/episode');
-      }
-
       await this.episodeModel.findByIdAndDelete(id).exec();
 
       return {

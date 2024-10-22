@@ -106,11 +106,6 @@ export class ChaptersService {
         throw new NotFoundException(`Chapter with id ${id} not found`);
       }
 
-      if (chapter.url) {
-        const publicId = this.cloudinaryService.extractPublicId(chapter.url);
-        await this.cloudinaryService.bulkDelete([publicId], 'podcast/chapter');
-      }
-
       await this.chapterModel.findByIdAndDelete(id).exec();
 
       return {

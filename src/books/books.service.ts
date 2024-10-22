@@ -106,11 +106,6 @@ export class BooksService {
         throw new NotFoundException(`Book with id ${id} not found`);
       }
 
-      if (book.url) {
-        const publicId = this.cloudinaryService.extractPublicId(book.url);
-        await this.cloudinaryService.bulkDelete([publicId], 'podcast/book');
-      }
-
       await this.bookModel.findByIdAndDelete(id).exec();
 
       return {

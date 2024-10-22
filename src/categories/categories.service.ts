@@ -113,11 +113,6 @@ export class CategoriesService {
         throw new NotFoundException(`Category with id ${id} not found`);
       }
 
-      if (category.url) {
-        const publicId = this.cloudinaryService.extractPublicId(category.url);
-        await this.cloudinaryService.bulkDelete([publicId], 'podcast/category');
-      }
-
       await this.categoryModel.findByIdAndDelete(id).exec();
 
       return {
