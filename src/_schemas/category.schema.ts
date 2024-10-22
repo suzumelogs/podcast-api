@@ -5,7 +5,6 @@ import { Exclude } from 'class-transformer';
 export type CategoryDocument = Category & Document;
 
 @Schema({ timestamps: true })
-@Schema()
 export class Category {
   @Exclude()
   _id: mongoose.Types.ObjectId;

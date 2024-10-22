@@ -49,15 +49,9 @@ export class ChaptersService {
 
   async create(
     createChapterDto: CreateChapterDto,
-    file: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Chapter }> {
     try {
-      const url = file
-        ? (await this.cloudinaryService.uploadImageChapter(file)).secure_url
-        : createChapterDto.url;
-
-      const chapterData = { ...createChapterDto, url };
-
+      const chapterData = { ...createChapterDto };
       const data = await this.chapterModel.create(chapterData);
 
       return {
@@ -73,7 +67,6 @@ export class ChaptersService {
   async update(
     id: string,
     updateChapterDto: UpdateChapterDto,
-    file?: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Chapter }> {
     try {
       const currentChapter = await this.chapterModel.findById(id).exec();
@@ -81,24 +74,7 @@ export class ChaptersService {
         throw new NotFoundException(`Chapter with id ${id} not found`);
       }
 
-      let url = updateChapterDto.url;
-      if (file) {
-        const uploadResponse =
-          await this.cloudinaryService.uploadImageChapter(file);
-        url = uploadResponse.secure_url;
-
-        if (currentChapter.url) {
-          const publicId = this.cloudinaryService.extractPublicId(
-            currentChapter.url,
-          );
-          await this.cloudinaryService.bulkDelete(
-            [publicId],
-            'podcast/chapter',
-          );
-        }
-      }
-
-      const updatedData = { ...updateChapterDto, url };
+      const updatedData = { ...updateChapterDto };
 
       const data = await this.chapterModel
         .findByIdAndUpdate(id, updatedData, {
@@ -128,11 +104,6 @@ export class ChaptersService {
 
       if (!chapter) {
         throw new NotFoundException(`Chapter with id ${id} not found`);
-      }
-
-      if (chapter.url) {
-        const publicId = this.cloudinaryService.extractPublicId(chapter.url);
-        await this.cloudinaryService.bulkDelete([publicId], 'podcast/chapter');
       }
 
       await this.chapterModel.findByIdAndDelete(id).exec();
