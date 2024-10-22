@@ -37,7 +37,6 @@ export class CreateBookDto {
     example: 'http://example.com/book-url',
   })
   @IsOptional()
-  @IsUrl({}, { message: 'URL must be a valid URL' })
   url?: string;
 
   @ApiProperty({

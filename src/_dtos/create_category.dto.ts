@@ -15,6 +15,5 @@ export class CreateCategoryDto {
     example: 'http://example.com/category-url',
   })
   @IsOptional()
-  @IsUrl({}, { message: 'URL must be a valid URL' })
   url?: string;
 }

@@ -29,7 +29,6 @@ export class CreateChapterDto {
     example: 'http://example.com/chapter-url',
   })
   @IsOptional()
-  @IsUrl({}, { message: 'URL must be a valid URL' })
   url?: string;
 
   @ApiProperty({
