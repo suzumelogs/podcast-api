@@ -7,18 +7,15 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { BooksService } from './books.service';
-import { Book } from '../_schemas/book.schema';
-import { CreateBookDto } from '../_dtos/create_book.dto';
-import { UpdateBookDto } from '../_dtos/update_book.dto';
-import { CollectionDto } from '../_dtos/input.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
+import { CreateBookDto } from '../_dtos/create_book.dto';
+import { CollectionDto } from '../_dtos/input.dto';
+import { UpdateBookDto } from '../_dtos/update_book.dto';
+import { Book } from '../_schemas/book.schema';
+import { BooksService } from './books.service';
 
 @ApiTags('Books')
 @ApiBearerAuth('JWT-auth')
@@ -38,22 +35,13 @@ export class BooksController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  async create(
-    @Body() createBookDto: CreateBookDto,
-    @UploadedFile() file?: Express.Multer.File,
-  ) {
-    return this.booksService.create(createBookDto, file);
+  async create(@Body() createBookDto: CreateBookDto) {
+    return this.booksService.create(createBookDto);
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('file'))
-  update(
-    @Param('id') id: string,
-    @Body() updateBookDto: UpdateBookDto,
-    @UploadedFile() file?: Express.Multer.File,
-  ) {
-    return this.booksService.update(id, updateBookDto, file);
+  update(@Param('id') id: string, @Body() updateBookDto: UpdateBookDto) {
+    return this.booksService.update(id, updateBookDto);
   }
 
   @Delete(':id')

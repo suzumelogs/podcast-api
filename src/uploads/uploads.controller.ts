@@ -1,15 +1,16 @@
 import {
+  BadRequestException,
   Controller,
   Post,
-  UseInterceptors,
   UploadedFile,
-  BadRequestException,
+  UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
-import { ImageTypeValidationPipe } from 'src/pipes/image-type-validation.pipe';
-import { AudioTypeValidationPipe } from 'src/pipes/audio-type-validation.pipe';
 import { extname } from 'path';
+import { AudioTypeValidationPipe } from 'src/pipes/audio-type-validation.pipe';
+import { ImageTypeValidationPipe } from 'src/pipes/image-type-validation.pipe';
 
 const storageConfig = (destinationPath: string) => ({
   storage: diskStorage({
@@ -23,6 +24,7 @@ const storageConfig = (destinationPath: string) => ({
   }),
 });
 
+@ApiTags('Uploads')
 @Controller('uploads')
 export class UploadsController {
   @Post('image')

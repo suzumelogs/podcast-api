@@ -7,18 +7,15 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateChapterDto } from 'src/_dtos/create_chapter.dto';
 import { CollectionDto } from 'src/_dtos/input.dto';
 import { UpdateChapterDto } from 'src/_dtos/update_chapter.dto';
 import { Chapter } from 'src/_schemas/chapter.schema';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
 import { ChaptersService } from './chapters.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Chapters')
 @ApiBearerAuth('JWT-auth')
@@ -38,22 +35,13 @@ export class ChaptersController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  create(
-    @Body() createChapterDto: CreateChapterDto,
-    @UploadedFile() file?: Express.Multer.File,
-  ) {
-    return this.chaptersService.create(createChapterDto, file);
+  create(@Body() createChapterDto: CreateChapterDto) {
+    return this.chaptersService.create(createChapterDto);
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('file'))
-  update(
-    @Param('id') id: string,
-    @Body() updateChapterDto: UpdateChapterDto,
-    @UploadedFile() file?: Express.Multer.File,
-  ) {
-    return this.chaptersService.update(id, updateChapterDto, file);
+  update(@Param('id') id: string, @Body() updateChapterDto: UpdateChapterDto) {
+    return this.chaptersService.update(id, updateChapterDto);
   }
 
   @Delete(':id')

@@ -7,13 +7,9 @@ import {
   Patch,
   Post,
   Query,
-  Res,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Response } from 'express';
 import { CreateEpisodeDto } from 'src/_dtos/create_episode.dto';
 import { CollectionDto } from 'src/_dtos/input.dto';
 import { UpdateEpisodeDto } from 'src/_dtos/update_episode.dto';
@@ -58,7 +54,6 @@ export class EpisodesController {
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('file'))
   update(@Param('id') id: string, @Body() updateEpisodeDto: UpdateEpisodeDto) {
     return this.episodesService.update(id, updateEpisodeDto);
   }
@@ -118,15 +113,5 @@ export class EpisodesController {
   @Get('get/all-top')
   async findAllTop(): Promise<{ data: Episode[] }> {
     return this.episodesService.findAllTop();
-  }
-
-  @Get('stream/preview-audio')
-  async streamPreviewAudio(@Query('path') path: string, @Res() res: Response) {
-    await this.episodesService.streamPreviewAudio(path, res.req.headers, res);
-  }
-
-  @Get('stream/preview-image')
-  async streamPreviewImage(@Query('path') path: string, @Res() res: Response) {
-    await this.episodesService.streamPreviewImage(path, res.req.headers, res);
   }
 }

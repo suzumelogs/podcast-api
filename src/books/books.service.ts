@@ -6,13 +6,13 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { CreateBookDto } from '../_dtos/create_book.dto';
+import { CollectionDto } from '../_dtos/input.dto';
+import { CollectionResponse } from '../_dtos/output.dto';
 import { UpdateBookDto } from '../_dtos/update_book.dto';
 import { Book, BookDocument } from '../_schemas/book.schema';
 import { DocumentCollector } from '../common/executor/collector';
-import { CollectionDto } from '../_dtos/input.dto';
-import { CollectionResponse } from '../_dtos/output.dto';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 
 @Injectable()
 export class BooksService {
@@ -49,14 +49,9 @@ export class BooksService {
 
   async create(
     createBookDto: CreateBookDto,
-    file: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Book }> {
     try {
-      const url = file
-        ? (await this.cloudinaryService.uploadImageBook(file)).secure_url
-        : createBookDto.url;
-
-      const bookData = { ...createBookDto, url };
+      const bookData = { ...createBookDto };
       const data = await this.bookModel.create(bookData);
 
       return {
@@ -72,7 +67,6 @@ export class BooksService {
   async update(
     id: string,
     updateBookDto: UpdateBookDto,
-    file?: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Book }> {
     try {
       const currentBook = await this.bookModel.findById(id).exec();
@@ -80,22 +74,7 @@ export class BooksService {
         throw new NotFoundException(`Book with id ${id} not found`);
       }
 
-      let url = updateBookDto.url;
-      if (file) {
-        const uploadResponse =
-          await this.cloudinaryService.uploadImageBook(file);
-        url = uploadResponse.secure_url;
-
-        if (currentBook.url) {
-          const publicId = this.cloudinaryService.extractPublicId(
-            currentBook.url,
-          );
-
-          await this.cloudinaryService.bulkDelete([publicId], 'podcast/book');
-        }
-      }
-
-      const updatedData = { ...updateBookDto, url };
+      const updatedData = { ...updateBookDto };
 
       const data = await this.bookModel
         .findByIdAndUpdate(id, updatedData, {

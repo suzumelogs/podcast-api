@@ -56,14 +56,9 @@ export class CategoriesService {
 
   async create(
     createCategoryDto: CreateCategoryDto,
-    file: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Category }> {
     try {
-      const url = file
-        ? (await this.cloudinaryService.uploadImageCategory(file)).secure_url
-        : createCategoryDto.url;
-
-      const categoryData = { ...createCategoryDto, url };
+      const categoryData = { ...createCategoryDto };
       const data = await this.categoryModel.create(categoryData);
 
       return {
@@ -79,7 +74,6 @@ export class CategoriesService {
   async update(
     id: string,
     updateCategoryDto: UpdateCategoryDto,
-    file?: Express.Multer.File,
   ): Promise<{ statusCode: number; message: string; data: Category }> {
     try {
       const currentCategory = await this.categoryModel.findById(id).exec();
@@ -87,25 +81,7 @@ export class CategoriesService {
         throw new NotFoundException(`Category with id ${id} not found`);
       }
 
-      let url = updateCategoryDto.url;
-      if (file) {
-        const uploadResponse =
-          await this.cloudinaryService.uploadImageCategory(file);
-        url = uploadResponse.secure_url;
-
-        if (currentCategory.url) {
-          const publicId = this.cloudinaryService.extractPublicId(
-            currentCategory.url,
-          );
-
-          await this.cloudinaryService.bulkDelete(
-            [publicId],
-            'podcast/category',
-          );
-        }
-      }
-
-      const updatedData = { ...updateCategoryDto, url };
+      const updatedData = { ...updateCategoryDto };
 
       const data = await this.categoryModel
         .findByIdAndUpdate(id, updatedData, {
