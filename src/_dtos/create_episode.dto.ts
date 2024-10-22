@@ -37,7 +37,6 @@ export class CreateEpisodeDto {
     example: 'http://example.com/artwork.jpg',
   })
   @IsOptional()
-  @IsUrl({}, { message: 'Artwork URL must be a valid URL' })
   artwork?: string;
 
   @ApiProperty({
