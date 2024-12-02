@@ -173,4 +173,21 @@ export class BooksService {
       throw error;
     }
   }
+
+  async findAllNoPagination(
+    name?: string,
+  ): Promise<{ statusCode: number; data: Book[] }> {
+    try {
+      const filter = name ? { name: { $regex: name, $options: 'i' } } : {};
+
+      const books = await this.bookModel.find(filter).lean().exec();
+
+      return {
+        statusCode: HttpStatus.OK,
+        data: books,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

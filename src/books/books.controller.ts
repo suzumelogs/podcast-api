@@ -64,4 +64,11 @@ export class BooksController {
   async findAllTop10Year(): Promise<{ data: Book[] }> {
     return this.booksService.findAllTop10Year();
   }
+
+  @Get('all/no-pagination')
+  async findAllNoPagination(
+    @Query('name') name?: string,
+  ): Promise<{ statusCode: number; data: Book[] }> {
+    return this.booksService.findAllNoPagination(name);
+  }
 }
