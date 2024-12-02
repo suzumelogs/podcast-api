@@ -7,19 +7,19 @@ export class StreamsService {
   constructor() {}
 
   async streamPreviewAudio(path: string, headers: any, res: Response) {
-    const { size } = statSync(String(path));
-    const videoRange = headers.range;
+    const { size } = statSync(path);
+    const audioRange = headers.range;
 
     res.setHeader('Accept-Ranges', 'bytes');
-    res.setHeader('Content-Type', 'video/mp4');
+    res.setHeader('Content-Type', 'audio/mpeg');
 
-    if (videoRange) {
-      const parts = videoRange.replace(/bytes=/, '').split('-');
+    if (audioRange) {
+      const parts = audioRange.replace(/bytes=/, '').split('-');
       const start = parseInt(parts[0], 10);
       const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
-      const chunksize = end - start + 1;
+      const chunkSize = end - start + 1;
 
-      const readStreamfile = createReadStream(path, {
+      const readStreamFile = createReadStream(path, {
         start,
         end,
         highWaterMark: 64 * 1024,
@@ -27,16 +27,16 @@ export class StreamsService {
 
       const head = {
         'Content-Range': `bytes ${start}-${end}/${size}`,
-        'Content-Length': chunksize,
-        'Content-Type': 'video/mp4',
+        'Content-Length': chunkSize,
+        'Content-Type': 'audio/mpeg',
       };
 
       res.writeHead(HttpStatus.PARTIAL_CONTENT, head);
-      readStreamfile.pipe(res);
+      readStreamFile.pipe(res);
     } else {
       const head = {
         'Content-Length': size,
-        'Content-Type': 'video/mp4',
+        'Content-Type': 'audio/mpeg',
       };
 
       res.writeHead(HttpStatus.OK, head);
@@ -65,7 +65,7 @@ export class StreamsService {
       const parts = imageRange.replace(/bytes=/, '').split('-');
       const start = parseInt(parts[0], 10);
       const end = parts[1] ? parseInt(parts[1], 10) : size - 1;
-      const chunksize = end - start + 1;
+      const chunkSize = end - start + 1;
 
       const readStreamFile = createReadStream(path, {
         start,
@@ -75,7 +75,7 @@ export class StreamsService {
 
       const head = {
         'Content-Range': `bytes ${start}-${end}/${size}`,
-        'Content-Length': chunksize,
+        'Content-Length': chunkSize,
         'Content-Type': contentType,
       };
 
