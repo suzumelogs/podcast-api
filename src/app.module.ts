@@ -11,6 +11,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { CategoriesModule } from './categories/categories.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { StreamsModule } from './streams/streams.module';
+import { IAPModule } from '@jeremybarbet/nest-iap';
+import { IapModule } from './iap/iap.module';
 
 @Module({
   imports: [
@@ -37,6 +39,7 @@ import { StreamsModule } from './streams/streams.module';
     CategoriesModule,
     UploadsModule,
     StreamsModule,
+    IapModule,
   ],
 })
 export class AppModule {}
