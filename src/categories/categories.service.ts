@@ -140,14 +140,33 @@ export class CategoriesService {
     statusCode: number;
     data: Category[];
   }> {
-    try {
-      const episodesTop = await this.categoryModel.find().lean();
-      return {
-        statusCode: HttpStatus.OK,
-        data: episodesTop,
-      };
-    } catch (error) {
-      throw error;
-    }
+    const categories = await this.categoryModel.aggregate([
+      {
+        $lookup: {
+          from: 'books',
+          localField: '_id',
+          foreignField: 'categoryId',
+          as: 'books',
+        },
+      },
+      {
+        $match: {
+          books: { $ne: [] },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          id: '$_id',
+          name: 1,
+          url: 1,
+        },
+      },
+    ]);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: categories,
+    };
   }
 }
