@@ -18,6 +18,7 @@ import { User, UserDocument } from 'src/_schemas/user.schema';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { DocumentCollector } from 'src/common/executor/collector';
 import { Episode, EpisodeDocument } from '../_schemas/episode.schema';
+import { EpisodePaginationDto } from 'src/_dtos/episode-pagination.dto';
 
 @Injectable()
 export class EpisodesService {
@@ -445,5 +446,59 @@ export class EpisodesService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async findAllPagination(
+    dto: EpisodePaginationDto,
+  ): Promise<any> {
+    const { page = 1, limit = 10, ...filters } = dto;
+
+    const skip = (page - 1) * limit;
+
+    const filter: any = {};
+
+    if (filters.title) {
+      filter.title = { $regex: filters.title, $options: 'i' }; 
+    }
+
+    if (filters.album) {
+      filter.album = { $regex: filters.album, $options: 'i' }; 
+    }
+
+    if (filters.artist) {
+      filter.artist = { $regex: filters.artist, $options: 'i' };  
+    }
+
+    if (filters.description) {
+      filter.description = { $regex: filters.description, $options: 'i' };  
+    }
+
+    if (filters.isPremium !== undefined) {
+      filter.isPremium = filters.isPremium; 
+    }
+
+    if (filters.isTop !== undefined) {
+      filter.isTop = filters.isTop; 
+    }
+
+    const [data, total] = await Promise.all([
+      this.episodeModel
+        .find(filter) 
+        .skip(skip)
+        .limit(limit)
+        .sort({ releaseDate: -1 }) 
+        .exec(),
+      this.episodeModel.countDocuments(filter).exec(), 
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      total,
+      totalPages,
+      currentPage: Number(page),
+      limit: Number(limit),
+      data,
+    };
   }
 }

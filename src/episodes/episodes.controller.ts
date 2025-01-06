@@ -17,6 +17,7 @@ import { Episode } from 'src/_schemas/episode.schema';
 import { AuthUser } from 'src/common/decorator/decorator.auth_user';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
 import { EpisodesService } from './episodes.service';
+import { EpisodePaginationDto } from 'src/_dtos/episode-pagination.dto';
 
 @ApiTags('Episodes')
 @ApiBearerAuth('JWT-auth')
@@ -113,5 +114,10 @@ export class EpisodesController {
   @Get('get/all-top')
   async findAllTop(): Promise<{ data: Episode[] }> {
     return this.episodesService.findAllTop();
+  }
+
+  @Get('all/pagination')
+  async findAllPagination(@Query() dto: EpisodePaginationDto) {
+    return this.episodesService.findAllPagination(dto);
   }
 }
