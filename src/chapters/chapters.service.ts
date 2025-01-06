@@ -9,6 +9,7 @@ import { CollectionDto } from '../_dtos/input.dto';
 import { CollectionResponse } from '../_dtos/output.dto';
 import { Chapter, ChapterDocument } from '../_schemas/chapter.schema';
 import { DocumentCollector } from '../common/executor/collector';
+import { ChapterPaginationDto } from 'src/_dtos/chapter-pagination.dto';
 
 @Injectable()
 export class ChaptersService {
@@ -238,5 +239,49 @@ export class ChaptersService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async findAllPagination(dto: ChapterPaginationDto): Promise<any> {
+    const { page = 1, limit = 10, ...filters } = dto;
+
+    const skip = (page - 1) * limit;
+
+    const filter: any = {};
+
+    if (filters.name) {
+      filter.name = { $regex: filters.name, $options: 'i' };
+    }
+
+    if (filters.description) {
+      filter.description = { $regex: filters.description, $options: 'i' };
+    }
+
+    if (filters.isPremium !== undefined) {
+      filter.isPremium = filters.isPremium;
+    }
+
+    if (filters.bookId) {
+      filter.bookId = { $regex: filters.bookId, $options: 'i' };
+    }
+
+    const [data, total] = await Promise.all([
+      this.chapterModel
+        .find(filter)
+        .skip(skip)
+        .limit(limit)
+        .sort({ name: 1 }) 
+        .exec(),
+      this.chapterModel.countDocuments(filter).exec(),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      total,
+      totalPages,
+      currentPage: Number(page),
+      limit: Number(limit),
+      data,
+    };
   }
 }

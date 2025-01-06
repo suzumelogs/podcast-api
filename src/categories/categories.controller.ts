@@ -16,6 +16,7 @@ import { UpdateCategoryDto } from 'src/_dtos/update_category.dto';
 import { Category } from 'src/_schemas/category.schema';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
 import { CategoriesService } from './categories.service';
+import { CategoryPaginationDto } from 'src/_dtos/category-pagination.dto';
 
 @ApiTags('Categories')
 @ApiBearerAuth('JWT-auth')
@@ -61,5 +62,10 @@ export class CategoriesController {
   @Get('all/no-pagination')
   async findAllNoPagination(): Promise<{ data: Category[] }> {
     return this.categoriesService.findAllNoPagination();
+  }
+
+  @Get('all/pagination')
+  async findAllPagination(@Query() dto: CategoryPaginationDto) {
+    return this.categoriesService.findAllPagination(dto);
   }
 }

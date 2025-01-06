@@ -16,6 +16,7 @@ import { CollectionDto } from '../_dtos/input.dto';
 import { UpdateBookDto } from '../_dtos/update_book.dto';
 import { Book } from '../_schemas/book.schema';
 import { BooksService } from './books.service';
+import { BookPaginationDto } from 'src/_dtos/book-pagination.dto';
 
 @ApiTags('Books')
 @ApiBearerAuth('JWT-auth')
@@ -70,5 +71,10 @@ export class BooksController {
     @Query('name') name?: string,
   ): Promise<{ statusCode: number; data: Book[] }> {
     return this.booksService.findAllNoPagination(name);
+  }
+
+  @Get('all/pagination')
+  async findAllPagination(@Query() dto: BookPaginationDto) {
+    return this.booksService.findAllPagination(dto);
   }
 }

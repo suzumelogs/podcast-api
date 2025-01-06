@@ -16,6 +16,7 @@ import { UpdateChapterDto } from 'src/_dtos/update_chapter.dto';
 import { Chapter } from 'src/_schemas/chapter.schema';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
 import { ChaptersService } from './chapters.service';
+import { ChapterPaginationDto } from 'src/_dtos/chapter-pagination.dto';
 
 @ApiTags('Chapters')
 @ApiBearerAuth('JWT-auth')
@@ -90,5 +91,10 @@ export class ChaptersController {
     @Param('currentChapterId') currentChapterId: string,
   ) {
     return this.chaptersService.findNextChapter(bookId, currentChapterId);
+  }
+
+  @Get('all/pagination')
+  async findAllPagination(@Query() dto: ChapterPaginationDto) {
+    return this.chaptersService.findAllPagination(dto);
   }
 }

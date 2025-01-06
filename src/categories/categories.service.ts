@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CategoryPaginationDto } from 'src/_dtos/category-pagination.dto';
 import { CreateCategoryDto } from 'src/_dtos/create_category.dto';
 import { CollectionDto } from 'src/_dtos/input.dto';
 import { CollectionResponse } from 'src/_dtos/output.dto';
@@ -167,6 +168,42 @@ export class CategoriesService {
     return {
       statusCode: HttpStatus.OK,
       data: categories,
+    };
+  }
+
+  async findAllPagination(dto: CategoryPaginationDto): Promise<any> {
+    const { page = 1, limit = 10, ...filters } = dto;
+
+    const skip = (page - 1) * limit;
+
+    const filter: any = {};
+
+    if (filters.name) {
+      filter.name = { $regex: filters.name, $options: 'i' };
+    }
+
+    if (filters.url) {
+      filter.url = { $regex: filters.url, $options: 'i' };
+    }
+
+    const [data, total] = await Promise.all([
+      this.categoryModel
+        .find(filter)
+        .skip(skip)
+        .limit(limit)
+        .sort({ name: 1 })
+        .exec(),
+      this.categoryModel.countDocuments(filter).exec(),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      total,
+      totalPages,
+      currentPage: Number(page),
+      limit: Number(limit),
+      data,
     };
   }
 }
