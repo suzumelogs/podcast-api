@@ -15,7 +15,7 @@ import { IapService } from './iap.service';
 export class IapController {
   constructor(private readonly iapService: IapService) {}
 
-  @Post('verify-receipt')
+  @Post('verify-receipt/android')
   async verifyGoogleReceipt(
     @Body()
     body: {
