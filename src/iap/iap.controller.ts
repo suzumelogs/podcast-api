@@ -1,7 +1,12 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
-import { IapService } from './iap.service';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
+import { IapService } from './iap.service';
 
 @ApiTags('IAP')
 @ApiBearerAuth('JWT-auth')
@@ -10,22 +15,20 @@ import { AccessTokenGuard } from 'src/common/gaurds/gaurd.access_token';
 export class IapController {
   constructor(private readonly iapService: IapService) {}
 
-  @Post('apple/verify')
-  async verifyAppleReceipt(
-    @Body('transactionReceipt') transactionReceipt: string,
-  ) {
-    return await this.iapService.verifyAppleReceipt(transactionReceipt);
-  }
-
-  @Post('google/verify')
+  @Post('verify-receipt')
   async verifyGoogleReceipt(
-    @Body('packageName') packageName: string,
-    @Body('token') token: string,
-    @Body('productId') productId: string,
+    @Body()
+    body: {
+      purchaseToken: string;
+      packageName: string;
+      productId: string;
+    },
   ) {
-    return await this.iapService.verifyGoogleReceipt(
+    const { purchaseToken, packageName, productId } = body;
+
+    return await this.iapService.verifyReceipt(
+      purchaseToken,
       packageName,
-      token,
       productId,
     );
   }

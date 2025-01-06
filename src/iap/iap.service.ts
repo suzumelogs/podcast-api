@@ -1,56 +1,78 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
+import { google } from 'googleapis';
 import { Model } from 'mongoose';
-import { AppstoreTransaction } from 'src/_schemas/appstore-transaction.schema';
 import { GooglePayTransaction } from 'src/_schemas/googlepay-transaction.schema';
-import { IAPService as NestIAPService } from '@jeremybarbet/nest-iap';
-import { VerifyResponse } from 'src/_types/iap.type';
 
 @Injectable()
 export class IapService {
+  private playDeveloperApi;
+
   constructor(
-    @InjectModel(AppstoreTransaction.name)
-    private appstoreTransactionModel: Model<AppstoreTransaction>,
     @InjectModel(GooglePayTransaction.name)
     private googlePayTransactionModel: Model<GooglePayTransaction>,
-    private readonly nestIAPService: NestIAPService,
-  ) {}
+    private configService: ConfigService,
+  ) {
+    const auth = new google.auth.GoogleAuth({
+      credentials: {
+        type: 'service_account',
+        project_id: this.configService.get<string>('GOOGLE_PROJECT_ID'),
+        private_key: this.configService.get<string>('GOOGLE_PRIVATE_KEY').replace(/\\n/g, '\n'),
+        client_email: this.configService.get<string>('GOOGLE_CLIENT_EMAIL'),
+      },
+      scopes: ['https://www.googleapis.com/auth/androidpublisher'],
+    });    
 
-  async verifyAppleReceipt(transactionReceipt: string) {
-    const verifyResponse: VerifyResponse =
-      await this.nestIAPService.verifyAppleReceipt({ transactionReceipt });
-
-    if (verifyResponse.error) {
-      throw new Error(verifyResponse.error);
-    }
-
-    const newTransaction = new this.appstoreTransactionModel(
-      verifyResponse.data,
-    );
-    await newTransaction.save();
-    return verifyResponse.data;
+    this.playDeveloperApi = google.androidpublisher({ version: 'v3', auth });
   }
 
-  async verifyGoogleReceipt(
+  async verifyReceipt(
+    purchaseToken: string,
     packageName: string,
-    token: string,
     productId: string,
   ) {
-    const verifyResponse: VerifyResponse =
-      await this.nestIAPService.verifyGoogleReceipt({
+    
+    try {
+      const response = await this.playDeveloperApi.purchases.subscriptions.get({
         packageName,
-        token,
-        productId,
+        subscriptionId: productId,
+        token: purchaseToken,
       });
+      
+      const transactionData = {
+        start_time_millis: response.data.startTimeMillis,
+        expiry_time_millis: response.data.expiryTimeMillis,
+        auto_renewing: response.data.autoRenewing ? 'true' : 'false',
+        price_currency_code: response.data.priceCurrencyCode,
+        price_amount_micros: response.data.priceAmountMicros,
+        country_code: response.data.countryCode,
+        developer_payload: response.data.developerPayload,
+        cancel_reason: response.data.cancelReason,
+        user_cancellation_time_millis: response.data.userCancellationTimeMillis,
+        order_id: response.data.orderId,
+        purchase_type: response.data.purchaseType,
+        acknowledgement_state: response.data.acknowledgementState,
+        kind: response.data.kind,
+        is_deleted: false,
+      };
 
-    if (verifyResponse.error) {
-      throw new Error(verifyResponse.error);
+      await this.googlePayTransactionModel.create(transactionData);
+
+      return {
+        success: true,
+        message: 'Receipt verified successfully',
+        data: transactionData,
+      };
+    } catch (error) {
+      throw new HttpException(
+        {
+          success: false,
+          message: 'Failed to verify receipt',
+          error: error.message,
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
-
-    const newTransaction = new this.googlePayTransactionModel(
-      verifyResponse.data,
-    );
-    await newTransaction.save();
-    return verifyResponse.data;
   }
 }
