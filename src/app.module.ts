@@ -13,6 +13,7 @@ import { UploadsModule } from './uploads/uploads.module';
 import { StreamsModule } from './streams/streams.module';
 import { IAPModule } from '@jeremybarbet/nest-iap';
 import { IapModule } from './iap/iap.module';
+import { StatisticalsModule } from './statisticals/statisticals.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { IapModule } from './iap/iap.module';
     UploadsModule,
     StreamsModule,
     IapModule,
+    StatisticalsModule,
   ],
 })
 export class AppModule {}
