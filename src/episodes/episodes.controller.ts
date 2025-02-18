@@ -21,16 +21,16 @@ import { EpisodePaginationDto } from 'src/_dtos/episode-pagination.dto';
 
 @ApiTags('Episodes')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(AccessTokenGuard)
 @Controller('episodes')
 export class EpisodesController {
-  constructor(private readonly episodesService: EpisodesService) {}
+  constructor(private readonly episodesService: EpisodesService) { }
 
   @Get()
   async findAll(@Query() query: CollectionDto): Promise<{ data: Episode[] }> {
     return this.episodesService.findAll(query);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Get('by-me')
   async findAllByMe(
     @Query() collectionDto: CollectionDto,
@@ -44,6 +44,7 @@ export class EpisodesController {
     return this.episodesService.findById(id);
   }
 
+  @UseGuards(AccessTokenGuard)
   @Get(':id/by-me')
   findByIdOfMe(@Param('id') id: string, @AuthUser('sub') userId: string) {
     return this.episodesService.findByIdOfMe(id, userId);

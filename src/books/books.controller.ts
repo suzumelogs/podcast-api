@@ -20,10 +20,9 @@ import { BookPaginationDto } from 'src/_dtos/book-pagination.dto';
 
 @ApiTags('Books')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(AccessTokenGuard)
 @Controller('books')
 export class BooksController {
-  constructor(private readonly booksService: BooksService) {}
+  constructor(private readonly booksService: BooksService) { }
 
   @Get()
   async findAll(@Query() query: CollectionDto): Promise<{ data: Book[] }> {

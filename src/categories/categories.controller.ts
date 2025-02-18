@@ -20,10 +20,9 @@ import { CategoryPaginationDto } from 'src/_dtos/category-pagination.dto';
 
 @ApiTags('Categories')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(AccessTokenGuard)
 @Controller('categories')
 export class CategoriesController {
-  constructor(private readonly categoriesService: CategoriesService) {}
+  constructor(private readonly categoriesService: CategoriesService) { }
 
   @Get()
   async findAll(@Query() query: CollectionDto): Promise<{ data: Category[] }> {

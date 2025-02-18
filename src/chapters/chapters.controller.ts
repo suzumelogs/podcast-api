@@ -20,10 +20,9 @@ import { ChapterPaginationDto } from 'src/_dtos/chapter-pagination.dto';
 
 @ApiTags('Chapters')
 @ApiBearerAuth('JWT-auth')
-@UseGuards(AccessTokenGuard)
 @Controller('chapters')
 export class ChaptersController {
-  constructor(private readonly chaptersService: ChaptersService) {}
+  constructor(private readonly chaptersService: ChaptersService) { }
 
   @Get()
   async findAll(@Query() query: CollectionDto): Promise<{ data: Chapter[] }> {
