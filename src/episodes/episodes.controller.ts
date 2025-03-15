@@ -20,16 +20,17 @@ import { EpisodesService } from './episodes.service';
 import { EpisodePaginationDto } from 'src/_dtos/episode-pagination.dto';
 
 @ApiTags('Episodes')
-@ApiBearerAuth('JWT-auth')
 @Controller('episodes')
 export class EpisodesController {
-  constructor(private readonly episodesService: EpisodesService) { }
+  constructor(private readonly episodesService: EpisodesService) {}
 
+  @ApiBearerAuth('JWT-auth')
   @Get()
   async findAll(@Query() query: CollectionDto): Promise<{ data: Episode[] }> {
     return this.episodesService.findAll(query);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @UseGuards(AccessTokenGuard)
   @Get('by-me')
   async findAllByMe(
@@ -39,32 +40,36 @@ export class EpisodesController {
     return this.episodesService.findAllByMe(collectionDto, userId);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Get(':id')
   findById(@Param('id') id: string) {
     return this.episodesService.findById(id);
   }
 
-  @UseGuards(AccessTokenGuard)
   @Get(':id/by-me')
-  findByIdOfMe(@Param('id') id: string, @AuthUser('sub') userId: string) {
+  findByIdOfMe(@Param('id') id: string, @Query('userId') userId?: string) {
     return this.episodesService.findByIdOfMe(id, userId);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Post()
   create(@Body() createEpisodeDto: CreateEpisodeDto) {
     return this.episodesService.create(createEpisodeDto);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateEpisodeDto: UpdateEpisodeDto) {
     return this.episodesService.update(id, updateEpisodeDto);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.episodesService.remove(id);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Get('chapter/:chapterId')
   async findByChapterId(@Param('chapterId') chapterId: string) {
     return this.episodesService.findByChapterId(chapterId);
@@ -107,16 +112,19 @@ export class EpisodesController {
     return this.episodesService.transcribeAudioUrl(id);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Patch(':id/update/is-top')
   async updateIsTop(@Param('id') id: string) {
     return this.episodesService.updateIsTop(id);
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Get('get/all-top')
   async findAllTop(): Promise<{ data: Episode[] }> {
     return this.episodesService.findAllTop();
   }
 
+  @ApiBearerAuth('JWT-auth')
   @Get('all/pagination')
   async findAllPagination(@Query() dto: EpisodePaginationDto) {
     return this.episodesService.findAllPagination(dto);

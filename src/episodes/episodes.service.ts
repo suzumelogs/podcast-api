@@ -110,46 +110,39 @@ export class EpisodesService {
 
   async findByIdOfMe(
     id: string,
-    userId: string,
+    userId?: string,
   ): Promise<{ statusCode: number; data: Episode & { isFavorite: boolean } }> {
-    try {
-      const episode = await this.episodeModel
-        .findById(id)
-        .populate({
-          path: 'chapterId',
-          populate: {
-            path: 'bookId',
-          },
-        })
-        .lean()
-        .exec();
+    const episode = await this.episodeModel
+      .findById(id)
+      .populate({
+        path: 'chapterId',
+        populate: { path: 'bookId' },
+      })
+      .lean()
+      .exec();
 
-      if (!episode) {
-        throw new NotFoundException(`Episode with id ${id} not found`);
-      }
-
-      const userFavorites = await this.userModel
-        .findById(userId)
-        .select('favorites')
-        .lean()
-        .exec();
-
-      const favoriteEpisodes = userFavorites?.favorites || [];
-
-      const isFavorite = favoriteEpisodes.some(
-        (favId: mongoose.Types.ObjectId) => favId.equals(episode._id),
-      );
-
-      return {
-        statusCode: HttpStatus.OK,
-        data: {
-          ...episode,
-          isFavorite,
-        },
-      };
-    } catch (error) {
-      throw error;
+    if (!episode) {
+      throw new NotFoundException(`Episode with id ${id} not found`);
     }
+
+    let isFavorite = false;
+
+    if (userId) {
+      const userFavorites = await this.userModel
+        .findById(userId, 'favorites')
+        .lean()
+        .exec();
+      isFavorite =
+        userFavorites?.favorites?.some(
+          (favId: mongoose.Types.ObjectId) =>
+            favId.toString() === episode._id.toString(),
+        ) ?? false;
+    }
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: { ...episode, isFavorite },
+    };
   }
 
   async create(
@@ -448,9 +441,7 @@ export class EpisodesService {
     }
   }
 
-  async findAllPagination(
-    dto: EpisodePaginationDto,
-  ): Promise<any> {
+  async findAllPagination(dto: EpisodePaginationDto): Promise<any> {
     const { page = 1, limit = 10, ...filters } = dto;
 
     const skip = (page - 1) * limit;
@@ -458,37 +449,37 @@ export class EpisodesService {
     const filter: any = {};
 
     if (filters.title) {
-      filter.title = { $regex: filters.title, $options: 'i' }; 
+      filter.title = { $regex: filters.title, $options: 'i' };
     }
 
     if (filters.album) {
-      filter.album = { $regex: filters.album, $options: 'i' }; 
+      filter.album = { $regex: filters.album, $options: 'i' };
     }
 
     if (filters.artist) {
-      filter.artist = { $regex: filters.artist, $options: 'i' };  
+      filter.artist = { $regex: filters.artist, $options: 'i' };
     }
 
     if (filters.description) {
-      filter.description = { $regex: filters.description, $options: 'i' };  
+      filter.description = { $regex: filters.description, $options: 'i' };
     }
 
     if (filters.isPremium !== undefined) {
-      filter.isPremium = filters.isPremium; 
+      filter.isPremium = filters.isPremium;
     }
 
     if (filters.isTop !== undefined) {
-      filter.isTop = filters.isTop; 
+      filter.isTop = filters.isTop;
     }
 
     const [data, total] = await Promise.all([
       this.episodeModel
-        .find(filter) 
+        .find(filter)
         .skip(skip)
         .limit(limit)
-        .sort({ releaseDate: -1 }) 
+        .sort({ releaseDate: -1 })
         .exec(),
-      this.episodeModel.countDocuments(filter).exec(), 
+      this.episodeModel.countDocuments(filter).exec(),
     ]);
 
     const totalPages = Math.ceil(total / limit);
