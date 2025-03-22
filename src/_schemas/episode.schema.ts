@@ -26,7 +26,7 @@ export class Episode {
   @Prop({ required: false })
   url: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   description: string;
 
   @Prop({ default: true })

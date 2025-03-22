@@ -22,7 +22,7 @@ import { BookPaginationDto } from 'src/_dtos/book-pagination.dto';
 @ApiBearerAuth('JWT-auth')
 @Controller('books')
 export class BooksController {
-  constructor(private readonly booksService: BooksService) { }
+  constructor(private readonly booksService: BooksService) {}
 
   @Get()
   async findAll(@Query() query: CollectionDto): Promise<{ data: Book[] }> {
@@ -50,9 +50,8 @@ export class BooksController {
   }
 
   @Get('value-labels/book')
-  async getBookValueLabels() {
-    const valueLabels = await this.booksService.getBookValueLabels();
-    return valueLabels;
+  async getBookValueLabels(@Query('categoryId') categoryId?: string) {
+    return await this.booksService.getBookValueLabels(categoryId);
   }
 
   @Patch(':id/update/is-top-10-year')

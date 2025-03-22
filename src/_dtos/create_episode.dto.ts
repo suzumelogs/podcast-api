@@ -51,9 +51,9 @@ export class CreateEpisodeDto {
     description: 'Brief description of the episode',
     example: 'This episode covers the beginning of the journey.',
   })
+  @IsOptional()
   @IsString({ message: 'Description must be a string' })
-  @IsNotEmpty({ message: 'Description must not be empty' })
-  description: string;
+  description?: string;
 
   @ApiProperty({
     description:

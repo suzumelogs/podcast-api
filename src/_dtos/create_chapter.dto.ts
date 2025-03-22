@@ -20,9 +20,9 @@ export class CreateChapterDto {
     description: 'Brief description of the chapter',
     example: 'This chapter covers the basics of the book.',
   })
+  @IsOptional()
   @IsString({ message: 'Description must be a string' })
-  @IsNotEmpty({ message: 'Description must not be empty' })
-  description: string;
+  description?: string;
 
   @ApiPropertyOptional({
     description: 'Optional URL with additional resources about this chapter',

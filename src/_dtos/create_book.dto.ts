@@ -28,9 +28,10 @@ export class CreateBookDto {
     description: 'Brief description of the book',
     example: 'A novel set in the 1920s about the mysterious Jay Gatsby.',
   })
+  @IsOptional()
   @IsString({ message: 'Description must be a string' })
   @IsNotEmpty({ message: 'Description must not be empty' })
-  description: string;
+  description?: string;
 
   @ApiPropertyOptional({
     description: 'Optional URL with more information about the book',

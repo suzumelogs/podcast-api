@@ -118,9 +118,13 @@ export class BooksService {
     }
   }
 
-  async getBookValueLabels(): Promise<{ label: string; value: string }[]> {
+  async getBookValueLabels(
+    categoryId?: string,
+  ): Promise<{ label: string; value: string }[]> {
     try {
-      const books = await this.bookModel.find().lean();
+      const filter = categoryId ? { categoryId } : {};
+      const books = await this.bookModel.find(filter).lean();
+
       return books.map((book) => ({
         label: book.name,
         value: book._id.toString(),
@@ -200,27 +204,27 @@ export class BooksService {
     const filter: any = {};
 
     if (filters.name) {
-      filter.name = { $regex: filters.name, $options: 'i' }; 
+      filter.name = { $regex: filters.name, $options: 'i' };
     }
 
     if (filters.author) {
-      filter.author = { $regex: filters.author, $options: 'i' }; 
+      filter.author = { $regex: filters.author, $options: 'i' };
     }
 
     if (filters.description) {
-      filter.description = { $regex: filters.description, $options: 'i' }; 
+      filter.description = { $regex: filters.description, $options: 'i' };
     }
 
     if (filters.isPremium !== undefined) {
-      filter.isPremium = filters.isPremium; 
+      filter.isPremium = filters.isPremium;
     }
 
     if (filters.isTop10Year !== undefined) {
-      filter.isTop10Year = filters.isTop10Year; 
+      filter.isTop10Year = filters.isTop10Year;
     }
 
     if (filters.categoryId) {
-      filter.categoryId = filters.categoryId; 
+      filter.categoryId = filters.categoryId;
     }
 
     const [data, total] = await Promise.all([
