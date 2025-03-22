@@ -22,7 +22,7 @@ import { ChapterPaginationDto } from 'src/_dtos/chapter-pagination.dto';
 @ApiBearerAuth('JWT-auth')
 @Controller('chapters')
 export class ChaptersController {
-  constructor(private readonly chaptersService: ChaptersService) { }
+  constructor(private readonly chaptersService: ChaptersService) {}
 
   @Get()
   async findAll(@Query() query: CollectionDto): Promise<{ data: Chapter[] }> {
@@ -50,8 +50,9 @@ export class ChaptersController {
   }
 
   @Get('value-labels/chapter')
-  async getChapterValueLabels() {
-    const valueLabels = await this.chaptersService.getChapterValueLabels();
+  async getChapterValueLabels(@Query('bookId') bookId?: string) {
+    const valueLabels =
+      await this.chaptersService.getChapterValueLabels(bookId);
     return valueLabels;
   }
 

@@ -124,7 +124,6 @@ export class BooksService {
     try {
       const filter = categoryId ? { categoryId } : {};
       const books = await this.bookModel.find(filter).lean();
-
       return books.map((book) => ({
         label: book.name,
         value: book._id.toString(),

@@ -118,9 +118,12 @@ export class ChaptersService {
     }
   }
 
-  async getChapterValueLabels(): Promise<{ label: string; value: string }[]> {
+  async getChapterValueLabels(
+    bookId?: string,
+  ): Promise<{ label: string; value: string }[]> {
     try {
-      const chapters = await this.chapterModel.find().lean();
+      const filter = bookId ? { bookId } : {};
+      const chapters = await this.chapterModel.find(filter).lean();
       return chapters.map((chapter) => ({
         label: chapter.name,
         value: chapter._id.toString(),
@@ -269,7 +272,7 @@ export class ChaptersService {
         .find(filter)
         .skip(skip)
         .limit(limit)
-        .sort({ name: 1 }) 
+        .sort({ name: 1 })
         .exec(),
       this.chapterModel.countDocuments(filter).exec(),
     ]);
