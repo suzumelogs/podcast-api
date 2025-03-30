@@ -18,4 +18,7 @@ export class ChapterPaginationDto {
 
   @IsOptional()
   bookId?: string;
+
+  @IsOptional()
+  categoryId?: string;
 }

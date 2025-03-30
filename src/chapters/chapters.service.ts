@@ -245,10 +245,9 @@ export class ChaptersService {
   }
 
   async findAllPagination(dto: ChapterPaginationDto): Promise<any> {
-    const { page = 1, limit = 10, ...filters } = dto;
+    const { page = 1, limit = 10, categoryId, ...filters } = dto;
 
     const skip = (page - 1) * limit;
-
     const filter: any = {};
 
     if (filters.name) {
@@ -264,7 +263,27 @@ export class ChaptersService {
     }
 
     if (filters.bookId) {
-      filter.bookId = { $regex: filters.bookId, $options: 'i' };
+      filter.bookId = filters.bookId;
+    }
+
+    if (categoryId) {
+      const books = await this.bookModel
+        .find({ categoryId })
+        .select('_id')
+        .exec();
+      const bookIds = books.map((book) => book._id);
+
+      if (bookIds.length === 0) {
+        return {
+          total: 0,
+          totalPages: 0,
+          currentPage: Number(page),
+          limit: Number(limit),
+          data: [],
+        };
+      }
+
+      filter.bookId = { $in: bookIds };
     }
 
     const [data, total] = await Promise.all([

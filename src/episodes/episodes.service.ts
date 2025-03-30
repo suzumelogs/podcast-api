@@ -442,10 +442,16 @@ export class EpisodesService {
   }
 
   async findAllPagination(dto: EpisodePaginationDto): Promise<any> {
-    const { page = 1, limit = 10, ...filters } = dto;
+    const {
+      page = 1,
+      limit = 10,
+      categoryId,
+      bookId,
+      chapterId,
+      ...filters
+    } = dto;
 
     const skip = (page - 1) * limit;
-
     const filter: any = {};
 
     if (filters.title) {
@@ -464,12 +470,38 @@ export class EpisodesService {
       filter.description = { $regex: filters.description, $options: 'i' };
     }
 
-    if (filters.isPremium !== undefined) {
+    if (typeof filters.isPremium === 'boolean') {
       filter.isPremium = filters.isPremium;
     }
 
-    if (filters.isTop !== undefined) {
+    if (typeof filters.isTop === 'boolean') {
       filter.isTop = filters.isTop;
+    }
+
+    let bookIds: mongoose.Types.ObjectId[] = [];
+    if (categoryId) {
+      const books = await this.bookModel.find({ categoryId }).select('_id');
+      bookIds = books.map((book) => book._id);
+    }
+
+    let chapterIds: mongoose.Types.ObjectId[] = [];
+    if (bookId) {
+      bookIds.push(new mongoose.Types.ObjectId(bookId));
+    }
+
+    if (bookIds.length > 0) {
+      const chapters = await this.chapterModel
+        .find({ bookId: { $in: bookIds } })
+        .select('_id');
+      chapterIds = chapters.map((chapter) => chapter._id);
+    }
+
+    if (chapterId) {
+      chapterIds.push(new mongoose.Types.ObjectId(chapterId));
+    }
+
+    if (chapterIds.length > 0) {
+      filter.chapterId = { $in: chapterIds };
     }
 
     const [data, total] = await Promise.all([
@@ -477,16 +509,14 @@ export class EpisodesService {
         .find(filter)
         .skip(skip)
         .limit(limit)
-        .sort({ releaseDate: -1 })
+        .sort({ createdAt: -1 })
         .exec(),
       this.episodeModel.countDocuments(filter).exec(),
     ]);
 
-    const totalPages = Math.ceil(total / limit);
-
     return {
       total,
-      totalPages,
+      totalPages: Math.ceil(total / limit),
       currentPage: Number(page),
       limit: Number(limit),
       data,

@@ -2,26 +2,35 @@ import { IsOptional } from 'class-validator';
 
 export class EpisodePaginationDto {
   @IsOptional()
-  page?: number = 1; 
+  page?: number = 1;
 
   @IsOptional()
-  limit?: number = 10; 
+  limit?: number = 10;
 
   @IsOptional()
-  title?: string;  
+  title?: string;
 
   @IsOptional()
-  album?: string; 
+  album?: string;
 
   @IsOptional()
-  artist?: string; 
-  
-  @IsOptional()
-  description?: string; 
+  artist?: string;
 
   @IsOptional()
-  isPremium?: boolean; 
+  description?: string;
 
   @IsOptional()
-  isTop?: boolean; 
+  isPremium?: boolean;
+
+  @IsOptional()
+  isTop?: boolean;
+
+  @IsOptional()
+  categoryId?: string;
+
+  @IsOptional()
+  bookId?: string;
+
+  @IsOptional()
+  chapterId?: string;
 }
